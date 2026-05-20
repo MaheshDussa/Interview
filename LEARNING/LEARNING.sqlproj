@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>LEARNING</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{21ca142e-8506-423d-96ef-0467daeeab94}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql170DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>LEARNING</RootNamespace>
+    <AssemblyName>LEARNING</AssemblyName>
+    <ModelCollation>1033,CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="Security\" />
+    <Folder Include="Scripts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\USERS.sql" />
+    <Build Include="dbo\Tables\ROLES.sql" />
+    <Build Include="dbo\Tables\USER_ROLES.sql" />
+    <Build Include="dbo\Tables\SalesData.sql" />
+    <Build Include="dbo\Tables\ROLE_PERMISSIONS.sql" />
+    <Build Include="dbo\Tables\ROLE_PERMISSION_MAPPING.sql" />
+    <Build Include="Security\Permissions.sql" />
+    <Build Include="Scripts\01_Schema_RBAC_Bootstrap.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\02_TSQL_Fundamentals_And_Pivot.sql" />
+    <None Include="Scripts\03_Joins.sql" />
+    <None Include="Scripts\04_StoredProcs_And_Functions.sql" />
+    <None Include="Scripts\05_Triggers.sql" />
+    <None Include="Scripts\06_Views_TempTables_CTEs_DerivedTables.sql" />
+    <None Include="Scripts\07_Window_Functions.sql" />
+    <None Include="Scripts\08_Specialized_Tables_InMemory_Temporal_Ledger_Graph.sql" />
+    <None Include="Scripts\09_Advanced_JSON_Regex_Fuzzy_Graph_Correlated_TryCatch.sql" />
+    <None Include="Scripts\10_Indexes_And_Execution_Plans.sql" />
+    <None Include="Scripts\11_Transactions_And_Isolation_Levels.sql" />
+    <None Include="Scripts\12_Constraints_Computed_Columns_Sequences.sql" />
+    <None Include="Scripts\13_Performance_Tuning_Stats_Partitioning_Columnstore.sql" />
+    <None Include="Scripts\14_SetOps_Apply_GroupingSets_Merge.sql" />
+    <None Include="Scripts\15_Dynamic_SQL_Cursors_TVPs.sql" />
+    <None Include="Scripts\16_Security_RLS_DDM_Encryption.sql" />
+    <None Include="Scripts\17_Admin_Backups_DMVs_Monitoring.sql" />
+    <None Include="Scripts\18_CDC_FullText_External_Tables.sql" />
+    <None Include="Scripts\19_Data_Modeling_Normalization.sql" />
+    <None Include="Scripts\20_System_Procs_System_Tables_Shortcuts.sql" />
+    <None Include="Scripts\Interview\01_Microsoft_Interview_150_Scenarios.sql" />
+  </ItemGroup>
+</Project>
