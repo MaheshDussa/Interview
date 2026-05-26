@@ -133,30 +133,32 @@ namespace leetcode
         {
             int n = ints.Length;
 
-            // Treat ints[0] as a trivially sorted prefix of size 1.
-            // Each iteration grows the sorted prefix by one element.
+            // Start from the second element (index 1) and move to the end
             for (int i = 1; i < n; i++)
             {
-                // The element we are trying to insert into the sorted prefix.
+                // Pick the current element to be inserted into the sorted part
                 int key = ints[i];
 
-                // Start comparing with the rightmost element of the prefix.
+                // 'j' starts at the element right before 'i'
                 int j = i - 1;
 
-                // Shift every element greater than `key` one slot to the right,
-                // making room for `key`. Stops when we either fall off the
-                // left edge OR find an element that is <= key.
+                // Shift elements of the sorted portion that are larger than 'key'
+                // to the right by one position to make space
                 while (j >= 0 && ints[j] > key)
                 {
-                    ints[j + 1] = ints[j];
-                    j--;
+                    ints[j + 1] = ints[j]; // Shift element to the right
+                    j--;                   // Move pointer left to check the next element
                 }
 
-                // j+1 is the correct landing spot for `key`.
-                ints[j + 1] = key;
+                // Place the 'key' into its correct sorted position
+                int correctPosition = j + 1;
+                ints[correctPosition] = key;
             }
+
+            // Return the sorted array
             return ints;
         }
+
 
 
         // ----------------------------------------------------------------
@@ -178,57 +180,79 @@ namespace leetcode
         // ----------------------------------------------------------------
         public int[] MergeSort(int[] ints)
         {
-            // Base case: an array of length 0 or 1 is already sorted.
+            // Base case: 0 or 1 element is already sorted.
             if (ints.Length <= 1)
             {
                 return ints;
             }
 
-            // Divide: split the array at the midpoint.
+            // Divide: Calculate the middle point
             int mid = ints.Length / 2;
 
-            // Conquer: recursively sort the left and right halves.
-            // (Take/Skip allocate new arrays which is fine for clarity.)
-            int[] left = MergeSort(ints.Take(mid).ToArray());
-            int[] right = MergeSort(ints.Skip(mid).ToArray());
+            // Create Left and Right arrays explicitly
+            int[] left = new int[mid];
+            int[] right = new int[ints.Length - mid];
 
-            // Combine: merge two sorted halves into one sorted array.
+            // Populate Left array
+            for (int i = 0; i < mid; i++)
+            {
+                left[i] = ints[i];
+            }
+
+            // Populate Right array (starts from mid index)
+            for (int j = 0; j < right.Length; j++)
+            {
+                right[j] = ints[mid + j];
+            }
+
+            // Conquer: Recursively sort both halves
+            left = MergeSort(left);
+            right = MergeSort(right);
+
+            // Combine: Merge them together
             return Merge(left, right);
         }
 
-        /// <summary>
-        /// Merge two already-sorted arrays into one sorted array — O(n).
-        /// </summary>
         private int[] Merge(int[] left, int[] right)
         {
-            // Output buffer big enough to hold every element.
             int[] result = new int[left.Length + right.Length];
-
-            // i -> next index to read in left
-            // j -> next index to read in right
-            // k -> next index to write in result
             int i = 0, j = 0, k = 0;
 
-            // Walk both inputs in parallel. At each step copy whichever
-            // front element is smaller. Using "<=" preserves the
-            // original relative order of equal items, which is what
-            // makes Merge Sort STABLE.
+            // Main comparison loop
             while (i < left.Length && j < right.Length)
             {
                 if (left[i] <= right[j])
-                    result[k++] = left[i++];
+                {
+                    result[k] = left[i];
+                    i++; // Move left pointer
+                }
                 else
-                    result[k++] = right[j++];
+                {
+                    result[k] = right[j];
+                    j++; // Move right pointer
+                }
+                k++; // Always move result pointer forward
             }
 
-            // At this point exactly one of the two inputs has elements
-            // remaining. Copy them over as-is — they are already sorted
-            // and larger than everything in `result`.
-            while (i < left.Length) result[k++] = left[i++];
-            while (j < right.Length) result[k++] = right[j++];
+            // Copy remaining items from left array (if any)
+            while (i < left.Length)
+            {
+                result[k] = left[i];
+                i++;
+                k++;
+            }
+
+            // Copy remaining items from right array (if any)
+            while (j < right.Length)
+            {
+                result[k] = right[j];
+                j++;
+                k++;
+            }
 
             return result;
         }
+
 
         // ----------------------------------------------------------------
         // Quick Sort  (in-place divide-and-conquer)
@@ -245,61 +269,63 @@ namespace leetcode
         // ----------------------------------------------------------------
         public int[] QuickSort(int[] ints)
         {
-            // Public entry point. We sort in place but also return the
-            // same array so it's easy to chain calls.
+            // Public entry point: starts sorting from index 0 to the last index
             QuickSortInPlace(ints, 0, ints.Length - 1);
             return ints;
         }
 
-        /// <summary>
-        /// Sort arr[low..high] in place using recursive Quick Sort.
-        /// </summary>
         private void QuickSortInPlace(int[] arr, int low, int high)
         {
-            // Base case: a 0- or 1-element segment is already sorted.
-            if (low >= high) return;
+            // Base case: If the segment has 0 or 1 element, it is already sorted
+            if (low >= high)
+            {
+                return;
+            }
 
-            // Partition the segment around a pivot. After this call
-            // arr[pivotIndex] is in its final sorted position.
+            // Partition: Rearrange elements and get the final position of the pivot
             int pivotIndex = Partition(arr, low, high);
 
-            // Recurse on the left side  (everything <= pivot).
+            // Recursively sort the left side (elements smaller than or equal to pivot)
             QuickSortInPlace(arr, low, pivotIndex - 1);
-            // Recurse on the right side (everything >  pivot).
+
+            // Recursively sort the right side (elements greater than pivot)
             QuickSortInPlace(arr, pivotIndex + 1, high);
         }
 
-        /// <summary>
-        /// Lomuto partition scheme. Uses arr[high] as the pivot, then
-        /// rearranges arr[low..high] so that all values <= pivot come
-        /// before all values > pivot. Returns the pivot's final index.
-        /// </summary>
         private int Partition(int[] arr, int low, int high)
         {
-            // Choose the rightmost element as the pivot.
+            // Choose the last element as the pivot
             int pivot = arr[high];
 
-            // `i` tracks the END of the "<= pivot" region. It starts at
-            // low-1 meaning that region is initially empty.
+            // 'i' keeps track of the boundary for elements smaller than or equal to the pivot
             int i = low - 1;
 
-            // Scan every element in [low .. high-1] (skip the pivot itself).
+            // Scan the array from the 'low' index up to the element just before the pivot
             for (int j = low; j < high; j++)
             {
-                // If arr[j] belongs on the "<= pivot" side, grow that
-                // region by one and swap arr[j] into it.
+                // If current element is smaller than or equal to pivot
                 if (arr[j] <= pivot)
                 {
-                    i++;
-                    (arr[i], arr[j]) = (arr[j], arr[i]);
+                    i++; // Expand the smaller element boundary forward
+
+                    // Swap arr[i] and arr[j] using a classic temporary variable
+                    int temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
                 }
             }
 
-            // Finally, swap the pivot into the slot just after the
-            // "<= pivot" region. That slot is its final sorted position.
-            (arr[i + 1], arr[high]) = (arr[high], arr[i + 1]);
-            return i + 1;
+            // Place the pivot element into its correct sorted position (at index i + 1)
+            int finalPivotIndex = i + 1;
+
+            int pivotTemp = arr[finalPivotIndex];
+            arr[finalPivotIndex] = arr[high];
+            arr[high] = pivotTemp;
+
+            // Return the final resting position of the pivot
+            return finalPivotIndex;
         }
+
 
         // ----------------------------------------------------------------
         // Heap Sort  (in-place, uses a binary max-heap embedded in arr)
@@ -308,67 +334,118 @@ namespace leetcode
         // re-heapify. Result is an ascending sorted array.
         // Best/Worst O(n log n), in-place O(1), Unstable.
         //
-        // Heap stored as an array (0-based):
+        // Heap stored as an array (0-based indexing):
         //   parent(i) = (i - 1) / 2
         //   left(i)   = 2*i + 1
         //   right(i)  = 2*i + 2
         // Max-heap invariant: arr[parent] >= arr[child] for every node.
+        //
+        // Example walk-through for [4, 10, 3, 5, 1]:
+        //   Phase 1 - Build heap: [10, 5, 3, 4, 1]
+        //   Phase 2 - Extract max repeatedly:
+        //     Swap [10,1] -> [1,5,3,4,|10] -> heapify -> [5,4,3,1,|10]
+        //     Swap [5,1]  -> [1,4,3,|5,10] -> heapify -> [4,1,3,|5,10]
+        //     Swap [4,3]  -> [3,1,|4,5,10] -> heapify -> [3,1,|4,5,10]
+        //     Swap [3,1]  -> [1,|3,4,5,10] -> sorted!
         // ----------------------------------------------------------------
         public int[] HeapSort(int[] ints)
         {
             int n = ints.Length;
 
-            // Phase 1: Build a max-heap in place. We only need to
-            // heapify the non-leaf nodes (indices 0 .. n/2 - 1) because
-            // every leaf is trivially a valid heap of size 1.
-            // Iterating bottom-up ensures children are already valid
-            // heaps by the time we heapify their parent.
+            // ============================================================
+            // PHASE 1: Build Max-Heap (bottom-up heapify)
+            // ============================================================
+            // We only heapify non-leaf nodes. Leaf nodes (from n/2 to n-1)
+            // are already valid heaps of size 1.
+            // Start from the last parent node (n/2 - 1) and work backward
+            // to the root (index 0). This ensures that when we heapify
+            // a parent, its children are already valid heaps.
+
+            // Loop variable i: starts at last parent, decrements to 0.
+            // Decrement happens automatically at the end of each iteration.
             for (int i = n / 2 - 1; i >= 0; i--)
-                Heapify(ints, n, i);
-
-            // Phase 2: Repeatedly extract the maximum.
-            // The largest element always sits at index 0 (the root).
-            // Swap it with the last element of the current heap, then
-            // "shrink" the heap by one and restore the heap property
-            // on the smaller heap.
-            for (int end = n - 1; end > 0; end--)
             {
-                // Move current max to its final sorted position at `end`.
-                (ints[0], ints[end]) = (ints[end], ints[0]);
-
-                // Re-heapify the remaining heap of size `end`.
-                Heapify(ints, end, 0);
+                // Heapify subtree rooted at index i.
+                // After this call, the subtree at i satisfies max-heap property.
+                Heapify(ints, n, i);
             }
 
+            // At this point, ints is a valid max-heap.
+            // The largest element is at index 0.
+
+            // ============================================================
+            // PHASE 2: Extract Maximum Elements One by One
+            // ============================================================
+            // Repeatedly move the root (max element) to the end of the
+            // array, reduce heap size, and restore heap property.
+
+            // Loop variable 'end': starts at last index (n-1), decrements to 1.
+            // Each iteration places one more element in its final sorted position.
+            // We stop at end=1 because when heap size=1, that element is already sorted.
+            for (int end = n - 1; end > 0; end--)
+            {
+                // Step 1: Swap root (max element at index 0) with last element.
+                // The max element is now in its final sorted position at index 'end'.
+                (ints[0], ints[end]) = (ints[end], ints[0]);
+
+                // Step 2: Reduce heap size to 'end' (excluding the sorted portion).
+                // The element at index 0 may violate the heap property now.
+                // Re-heapify from root to restore max-heap property.
+                Heapify(ints, end, 0);
+
+                // After heapify, the next largest element is now at the root.
+                // Loop continues: 'end' decrements by 1 automatically.
+            }
+
+            // Array is now sorted in ascending order.
             return ints;
         }
 
         /// <summary>
-        /// Sift-down: assumes the subtrees rooted at left(root) and
-        /// right(root) are already valid max-heaps, then pushes
-        /// arr[root] downward until the subtree rooted at `root` is
-        /// also a valid max-heap. Considers only indices [0..heapSize-1].
+        /// Sift-down operation: Ensures the subtree rooted at 'root' satisfies
+        /// the max-heap property. Assumes left and right subtrees are already
+        /// valid max-heaps.
+        /// 
+        /// Parameters:
+        ///   arr      - the array containing the heap
+        ///   heapSize - number of elements in the active heap (0 to heapSize-1)
+        ///   root     - index of the subtree root to heapify
         /// </summary>
         private void Heapify(int[] arr, int heapSize, int root)
         {
-            // Index of the largest value among (root, left child, right child).
+            // Start by assuming the root is the largest.
             int largest = root;
-            int left = 2 * root + 1;
-            int right = 2 * root + 2;
 
-            // Check the left child (if it exists inside the active heap).
-            if (left < heapSize && arr[left] > arr[largest]) largest = left;
-            // Check the right child.
-            if (right < heapSize && arr[right] > arr[largest]) largest = right;
+            // Calculate indices of left and right children.
+            int leftChild = 2 * root + 1;
+            int rightChild = 2 * root + 2;
 
-            // If the root was NOT the largest, swap it with the larger
-            // child and recurse down into that child to keep restoring
-            // the heap property level by level.
+            // Check if left child exists AND is larger than current largest.
+            // leftChild < heapSize ensures the child is within the active heap.
+            if (leftChild < heapSize && arr[leftChild] > arr[largest])
+            {
+                largest = leftChild;
+            }
+
+            // Check if right child exists AND is larger than current largest.
+            if (rightChild < heapSize && arr[rightChild] > arr[largest])
+            {
+                largest = rightChild;
+            }
+
+            // If the largest element is NOT the root, we need to swap
+            // and continue heapifying down the affected subtree.
             if (largest != root)
             {
+                // Swap root with the larger child.
                 (arr[root], arr[largest]) = (arr[largest], arr[root]);
+
+                // Recursively heapify the affected subtree.
+                // The child that was swapped may now violate heap property
+                // in its subtree, so we heapify it.
                 Heapify(arr, heapSize, largest);
             }
+            // If largest == root, the subtree already satisfies heap property.
         }
 
         // ----------------------------------------------------------------
@@ -378,56 +455,122 @@ namespace leetcode
         // its final sorted position. Works on integers in a known range.
         // Best/Worst O(n + k) where k = value range, O(k) extra space, Stable.
         //
-        // NOTE: only practical when k (= max - min + 1) is not much
-        // bigger than n. For huge ranges use Radix Sort or a comparison sort.
+        // NOTE: Only practical when k (= max - min + 1) is not much
+        // bigger than n. For huge ranges use Radix Sort or comparison sort.
         //
         // Example walk-through for [4, 2, 2, 8, 3]:
-        //   min=2, max=8, range=7  (offset each value by -2)
-        //   counts (by value 2..8): [2, 1, 1, 0, 0, 0, 1]
-        //   prefix:                  [2, 3, 4, 4, 4, 4, 5]   <- exclusive ends
-        //   placement (right-to-left for stability): [2,2,3,4,8]
+        //   Step 1 - Find range: min=2, max=8, range=7
+        //   Step 2 - Count frequencies (offset by -2):
+        //            Value:  2  3  4  5  6  7  8
+        //            Count: [2, 1, 1, 0, 0, 0, 1]
+        //   Step 3 - Prefix sum (cumulative counts):
+        //            Count: [2, 3, 4, 4, 4, 4, 5]
+        //            This means: 2 values ≤2, 3 values ≤3, etc.
+        //   Step 4 - Place elements (RIGHT to LEFT for stability):
+        //            Process 3: count[1]=3, place at output[2], count[1]=2
+        //            Process 8: count[6]=5, place at output[4], count[6]=4
+        //            Process 2: count[0]=2, place at output[1], count[0]=1
+        //            Process 2: count[0]=1, place at output[0], count[0]=0
+        //            Process 4: count[2]=4, place at output[3], count[2]=3
+        //            Result: [2, 2, 3, 4, 8]
         // ----------------------------------------------------------------
         public int[] CountingSort(int[] ints)
         {
-            // Edge case: empty input is already sorted.
-            if (ints.Length == 0) return ints;
+            int n = ints.Length;
 
-            // Find the value range so we can size the count array and
-            // also support negative numbers via the `min` offset.
-            int min = ints.Min();
-            int max = ints.Max();
-            int range = max - min + 1;
-
-            // count[v - min] will hold the number of occurrences of value v.
-            int[] count = new int[range];
-            // output holds the final sorted result.
-            int[] output = new int[ints.Length];
-
-            // 1. Tally: count how many times each value appears.
-            //    Shifting by -min lets us use a 0-based index even when
-            //    the input contains negative numbers.
-            foreach (int value in ints)
-                count[value - min]++;
-
-            // 2. Prefix sum: turn counts into "exclusive end positions".
-            //    After this loop count[i] equals the number of input
-            //    values that are <= (i + min), which is exactly the
-            //    index AFTER the block of (i + min)s in the sorted output.
-            for (int i = 1; i < range; i++)
-                count[i] += count[i - 1];
-
-            // 3. Place: iterate the input from RIGHT to LEFT so that
-            //    equal values keep their original relative order
-            //    (this is what makes Counting Sort STABLE).
-            //    We decrement count[value - min] first, then write
-            //    into that slot — so count[] always points to the
-            //    next free slot for that value.
-            for (int i = ints.Length - 1; i >= 0; i--)
+            // Edge case: empty or single-element array is already sorted.
+            if (n == 0)
             {
-                int value = ints[i];
-                output[--count[value - min]] = value;
+                return ints;
             }
 
+            // ============================================================
+            // STEP 1: Find the Range of Values
+            // ============================================================
+            // We need to know the minimum and maximum values to:
+            // 1. Size our count array appropriately
+            // 2. Support negative numbers by using an offset (min)
+
+            int min = ints[0];
+            int max = ints[0];
+
+            // Loop through array to find min and max.
+            // Loop variable i: increments from 1 to n-1 automatically.
+            for (int i = 1; i < n; i++)
+            {
+                if (ints[i] < min)
+                {
+                    min = ints[i];
+                }
+                if (ints[i] > max)
+                {
+                    max = ints[i];
+                }
+            }
+
+            // Calculate the range of values.
+            // For values [2, 8], range = 8 - 2 + 1 = 7 (values: 2,3,4,5,6,7,8)
+            int range = max - min + 1;
+
+            // ============================================================
+            // STEP 2: Count Frequency of Each Value
+            // ============================================================
+            // count[v - min] will store the frequency of value v.
+            // Subtracting min lets us use 0-based indexing even with negatives.
+            int[] count = new int[range];
+
+            // Count each value's frequency.
+            // Loop variable i: increments from 0 to n-1 automatically.
+            for (int i = 0; i < n; i++)
+            {
+                int value = ints[i];
+                int index = value - min;  // Map value to count array index
+                count[index]++;           // Increment count for this value
+            }
+
+            // ============================================================
+            // STEP 3: Build Prefix Sum (Cumulative Counts)
+            // ============================================================
+            // Transform count[] from frequencies to cumulative totals.
+            // After this, count[i] = number of elements ≤ (i + min).
+            // This tells us where each value should END in the sorted output.
+
+            // Loop variable i: starts at 1, increments to range-1 automatically.
+            // We start at 1 because count[0] is already the count of the smallest value.
+            for (int i = 1; i < range; i++)
+            {
+                // Add previous count to current count.
+                // This creates a running total.
+                count[i] = count[i] + count[i - 1];
+            }
+
+            // ============================================================
+            // STEP 4: Place Elements in Sorted Order (RIGHT to LEFT)
+            // ============================================================
+            // We iterate from RIGHT to LEFT to maintain STABILITY.
+            // Equal values will appear in the same relative order as input.
+
+            int[] output = new int[n];
+
+            // Loop variable i: starts at n-1, decrements to 0 automatically.
+            // Processing backward preserves the original order of equal elements.
+            for (int i = n - 1; i >= 0; i--)
+            {
+                int value = ints[i];           // Current value to place
+                int index = value - min;        // Map to count array index
+
+                // count[index] tells us how many elements are ≤ value.
+                // Decrement it first (--count[index]) to get the position
+                // where this value should be placed.
+                count[index]--;                 // Decrement first
+                int position = count[index];    // Get the position
+                output[position] = value;       // Place value in output
+
+                // This can be written more concisely as:
+                // output[--count[index]] = value;
+            }
+
+            // Array is now sorted.
             return output;
         }
     }

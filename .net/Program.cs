@@ -5,8 +5,8 @@
 // Console.WriteLine(arrays.sumofDigits(1234));
 
 var sorting = new sorting();
-int[] arr = { 5, 2, 9, 1, 5, 6 };
-sorting.BubbleSort(arr);
+int[] arr = { 5, 4 };
+sorting.MergeSort(arr);
 
 
 

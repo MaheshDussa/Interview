@@ -1,0 +1,90 @@
+25-05-2026 21:26:28	This log contains information about the import schema operation into project 'Learning' on computer 'USHYDMDUSSA5' by user 'mdussa'.
+25-05-2026 21:26:29	Import of database schema has started.
+25-05-2026 21:26:47	Gathering database credentials
+25-05-2026 21:26:47	Gathering database options
+25-05-2026 21:26:47	Gathering generic database scoped configuration option
+25-05-2026 21:26:47	Gathering users
+25-05-2026 21:26:47	Gathering roles
+25-05-2026 21:26:47	Gathering application roles
+25-05-2026 21:26:47	Gathering role memberships
+25-05-2026 21:26:47	Gathering filegroups
+25-05-2026 21:26:47	Gathering full-text catalogs
+25-05-2026 21:26:47	Gathering assemblies
+25-05-2026 21:26:47	Gathering certificates
+25-05-2026 21:26:47	Gathering asymmetric keys
+25-05-2026 21:26:47	Gathering symmetric keys
+25-05-2026 21:26:47	Gathering encrypted symmetric keys
+25-05-2026 21:26:47	Gathering schemas
+25-05-2026 21:26:47	Gathering XML schema collections
+25-05-2026 21:26:47	Gathering user-defined data types
+25-05-2026 21:26:47	Gathering user-defined types
+25-05-2026 21:26:47	Gathering table types
+25-05-2026 21:26:47	Gathering unique keys for table types
+25-05-2026 21:26:47	Gathering primary keys for table types
+25-05-2026 21:26:48	Gathering indexes for table types
+25-05-2026 21:26:48	Gathering check constraints for table types
+25-05-2026 21:26:48	Gathering default constraints for table types
+25-05-2026 21:26:48	Gathering partition functions
+25-05-2026 21:26:48	Gathering partition schemes
+25-05-2026 21:26:48	Gathering functions
+25-05-2026 21:26:48	Gathering encrypted functions
+25-05-2026 21:26:48	Gathering aggregates
+25-05-2026 21:26:48	Gathering procedures
+25-05-2026 21:26:48	Gathering encrypted procedures
+25-05-2026 21:26:48	Gathering tables
+25-05-2026 21:27:20	Gathering primary keys
+25-05-2026 21:27:20	Gathering unique constraints
+25-05-2026 21:27:20	Gathering foreign keys
+25-05-2026 21:27:20	Gathering default constraints
+25-05-2026 21:27:20	Gathering check constraints
+25-05-2026 21:27:20	Gathering views
+25-05-2026 21:27:20	Gathering encrypted views
+25-05-2026 21:27:20	Gathering indexes
+25-05-2026 21:27:20	Gathering statistics
+25-05-2026 21:27:20	Gathering full-text index stoplists
+25-05-2026 21:27:20	Gathering search property lists
+25-05-2026 21:27:20	Gathering search properties
+25-05-2026 21:27:20	Gathering full-text indexes
+25-05-2026 21:27:20	Gathering column store indexes
+25-05-2026 21:27:20	Gathering spatial indexes
+25-05-2026 21:27:20	Gathering XML indexes
+25-05-2026 21:27:20	Gathering JSON indexes
+25-05-2026 21:27:20	Gathering Selective XML indexes
+25-05-2026 21:27:20	Gathering encrypted triggers
+25-05-2026 21:27:20	Gathering triggers
+25-05-2026 21:27:20	Gathering encrypted and clr ddl triggers
+25-05-2026 21:27:21	Gathering ddl triggers
+25-05-2026 21:27:21	Creating edge constraints
+25-05-2026 21:27:21	Gathering synonyms
+25-05-2026 21:27:21	Gathering defaults
+25-05-2026 21:27:21	Gathering data constraint uddt bindings
+25-05-2026 21:27:21	Gathering rules
+25-05-2026 21:27:21	Gathering data constraint uddt bindings
+25-05-2026 21:27:21	Gathering message types
+25-05-2026 21:27:21	Gathering queues
+25-05-2026 21:27:21	Gathering contracts
+25-05-2026 21:27:21	Gathering services
+25-05-2026 21:27:21	Gathering event notifications
+25-05-2026 21:27:21	Gathering remote service bindings
+25-05-2026 21:27:21	Gathering broker priorities
+25-05-2026 21:27:21	Gathering signatures
+25-05-2026 21:27:21	Gathering compression options
+25-05-2026 21:27:21	Gathering sequence types
+25-05-2026 21:27:21	Gathering security policies
+25-05-2026 21:27:21	Gather column encryption keys
+25-05-2026 21:27:21	Gathering column master keys
+25-05-2026 21:27:21	Gathering external data sources
+25-05-2026 21:27:21	Gathering external file formats
+25-05-2026 21:27:21	Gathering external models
+25-05-2026 21:27:21	Gathering external tables
+25-05-2026 21:27:21	Gathering XML index compression options
+25-05-2026 21:27:21	Gathering extended properties
+25-05-2026 21:27:21	Gathering assemblies
+25-05-2026 21:27:21	Gathering credentials
+25-05-2026 21:27:21	Gathering logins
+25-05-2026 21:27:21	Gathering server audits
+25-05-2026 21:27:22	Scanning project for duplicate elements
+25-05-2026 21:27:22	Finished duplicate element processing
+25-05-2026 21:27:22	Finished importing database.
+25-05-2026 21:27:22	A summary of the import was saved to the following location: C:\Users\mdussa\Desktop\WOW-Team1\DP-800\Learning\Import Schema Logs\Learning_20260525035628.log
+25-05-2026 21:27:22	Click Finish to continue...

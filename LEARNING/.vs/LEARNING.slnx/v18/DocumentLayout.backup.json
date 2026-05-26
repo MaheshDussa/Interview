@@ -1,7 +1,56 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script4.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|solutionrelative:Scripts\\Script4.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script5.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|solutionrelative:Scripts\\Script5.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script6.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|solutionrelative:Scripts\\Script6.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script3.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|solutionrelative:Scripts\\Script3.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script2.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|solutionrelative:Scripts\\Script2.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\script1.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}",
+      "RelativeMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|solutionrelative:Scripts\\script1.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\script1.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame",
+      "RelativeMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|solutionrelative:Scripts\\script1.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script2.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame",
+      "RelativeMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|solutionrelative:Scripts\\Script2.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script3.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame",
+      "RelativeMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|solutionrelative:Scripts\\Script3.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script4.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame",
+      "RelativeMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|solutionrelative:Scripts\\Script4.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script5.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame",
+      "RelativeMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|solutionrelative:Scripts\\Script5.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script6.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame",
+      "RelativeMoniker": "D:0:0:{21CA142E-8506-423D-96EF-0467DAEEAB94}|LEARNING.sqlproj|solutionrelative:Scripts\\Script6.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,7 +58,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 622,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -18,6 +67,77 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Script6.sql ",
+              "DocumentMoniker": "C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script6.sql",
+              "RelativeDocumentMoniker": "Scripts\\Script6.sql",
+              "ToolTip": "C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script6.sql",
+              "RelativeToolTip": "Scripts\\Script6.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2026-05-17T20:22:53.55Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Script5.sql ",
+              "DocumentMoniker": "C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script5.sql",
+              "RelativeDocumentMoniker": "Scripts\\Script5.sql",
+              "ToolTip": "C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script5.sql",
+              "RelativeToolTip": "Scripts\\Script5.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2026-05-17T20:22:25.354Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Script4.sql ",
+              "DocumentMoniker": "C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script4.sql",
+              "RelativeDocumentMoniker": "Scripts\\Script4.sql",
+              "ToolTip": "C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script4.sql",
+              "RelativeToolTip": "Scripts\\Script4.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2026-05-17T20:21:56.765Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Script3.sql ",
+              "DocumentMoniker": "C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script3.sql",
+              "RelativeDocumentMoniker": "Scripts\\Script3.sql",
+              "ToolTip": "C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script3.sql",
+              "RelativeToolTip": "Scripts\\Script3.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2026-05-17T20:21:32.711Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Script2.sql ",
+              "DocumentMoniker": "C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script2.sql",
+              "RelativeDocumentMoniker": "Scripts\\Script2.sql",
+              "ToolTip": "C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\Script2.sql",
+              "RelativeToolTip": "Scripts\\Script2.sql",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2026-05-17T20:21:01.312Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "script1.sql ",
+              "DocumentMoniker": "C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\script1.sql",
+              "RelativeDocumentMoniker": "Scripts\\script1.sql",
+              "ToolTip": "C:\\Users\\mdussa\\Desktop\\WOW-Practice\\demo2\\src\\LEARNING\\Scripts\\script1.sql\r\n(localdb)\\ProjectModels.LEARNING\r\n(US\\mdussa)",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2026-05-17T20:19:37.419Z",
+              "EditorCaption": ""
             }
           ]
         }
