@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="dblearning.sqlproj">
+    <Build />
+    <Deploy />
+  </Project>
+</Solution>
