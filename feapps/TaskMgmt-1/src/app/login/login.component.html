@@ -1,0 +1,29 @@
+<div class="login-page">
+  <div class="card">
+    <h1>Task Manager</h1>
+    <p class="subtitle">Sign in with your email</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="you@example.com"
+        autocomplete="email"
+        [class.invalid]="form.controls.email.touched && form.controls.email.invalid"
+      />
+      @if (form.controls.email.touched && form.controls.email.invalid) {
+        <small class="error">Please enter a valid email.</small>
+      }
+
+      @if (error()) {
+        <div class="alert">{{ error() }}</div>
+      }
+
+      <button type="submit" [disabled]="loading()">
+        {{ loading() ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+  </div>
+</div>
