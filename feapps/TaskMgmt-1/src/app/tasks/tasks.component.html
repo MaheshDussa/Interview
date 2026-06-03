@@ -1,0 +1,83 @@
+<div class="tasks-page">
+  <header class="topbar">
+    <h1>My Tasks</h1>
+    <button class="link" type="button" (click)="logout()">Sign out</button>
+  </header>
+
+  <section class="create-card">
+    <h2>Add a task</h2>
+    <form [formGroup]="createForm" (ngSubmit)="create()" class="task-form" novalidate>
+      <div class="field grow">
+        <label for="newTitle">Title</label>
+        <input id="newTitle" type="text" formControlName="title" maxlength="150" placeholder="What needs to be done?" />
+        @if (createForm.controls.title.touched && createForm.controls.title.invalid) {
+          <small class="error">Title is required (max 150 chars).</small>
+        }
+      </div>
+      <div class="field">
+        <label for="newDue">Due date</label>
+        <input id="newDue" type="date" formControlName="dueDate" />
+      </div>
+      <div class="field actions">
+        <button type="submit" class="primary">Add</button>
+      </div>
+    </form>
+  </section>
+
+  @if (error()) {
+    <div class="alert">{{ error() }}</div>
+  }
+
+  <section class="list-card">
+    <div class="list-head">
+      <h2>All tasks</h2>
+      <button class="link" type="button" (click)="refresh()" [disabled]="loading()">
+        {{ loading() ? 'Loading…' : 'Refresh' }}
+      </button>
+    </div>
+
+    @if (loading() && tasks().length === 0) {
+      <p class="muted">Loading tasks…</p>
+    } @else if (tasks().length === 0) {
+      <p class="muted">No tasks yet. Add your first one above.</p>
+    } @else {
+      <ul class="task-list">
+        @for (task of tasks(); track task.id) {
+          <li class="task-item" [class.done]="task.isCompleted">
+            @if (editingId() === task.id) {
+              <form [formGroup]="editForm" (ngSubmit)="saveEdit(task.id)" class="edit-form" novalidate>
+                <input type="text" formControlName="title" maxlength="150" />
+                <input type="date" formControlName="dueDate" />
+                <label class="check">
+                  <input type="checkbox" formControlName="isCompleted" /> Done
+                </label>
+                <div class="row-actions">
+                  <button type="submit" class="primary small">Save</button>
+                  <button type="button" class="small" (click)="cancelEdit()">Cancel</button>
+                </div>
+              </form>
+            } @else {
+              <label class="check">
+                <input
+                  type="checkbox"
+                  [checked]="task.isCompleted"
+                  (change)="toggleComplete(task)"
+                />
+              </label>
+              <div class="task-main">
+                <div class="title">{{ task.title }}</div>
+                @if (task.dueDate) {
+                  <div class="due">Due {{ task.dueDate | date:'mediumDate' }}</div>
+                }
+              </div>
+              <div class="row-actions">
+                <button type="button" class="small" (click)="startEdit(task)">Edit</button>
+                <button type="button" class="small danger" (click)="remove(task)">Delete</button>
+              </div>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</div>
