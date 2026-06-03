@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>dblearning</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{59b1cae0-77b5-4ead-9030-e4738ba0cee8}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql170DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>dblearning</RootNamespace>
+    <AssemblyName>dblearning</AssemblyName>
+    <ModelCollation>1033,CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="Security\" />
+    <Folder Include="Scripts" />
+    <Folder Include="Scripts\PostDeployment" />
+    <Folder Include="Scripts\PreDeployment" />
+    <Folder Include="Scripts\Data" />
+    <Folder Include="DB-Learning" />
+    <Folder Include="DB-Learning\Interview" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\Categories.sql" />
+    <Build Include="dbo\Tables\ROLE_PERMISSION_MAPPING.sql" />
+    <Build Include="dbo\Tables\ROLE_PERMISSIONS.sql" />
+    <Build Include="dbo\Tables\ROLES.sql" />
+    <Build Include="dbo\Tables\SalesData.sql" />
+    <Build Include="dbo\Tables\Tasks.sql" />
+    <Build Include="dbo\Tables\USER_ROLES.sql" />
+    <Build Include="dbo\Tables\USERS.sql" />
+    <None Include="Scripts\Data\create-encryption-objects.sql" />
+    <None Include="Scripts\Data\DatabaseMasterKey.sql" />
+    <Build Include="DB-Learning\Interview\01_Microsoft_Interview_150_Scenarios.sql" />
+    <Build Include="DB-Learning\Interview\02_Tricky_Temp_Table_Scenarios.sql" />
+    <Build Include="DB-Learning\00_QuickStart_Encryption.sql" />
+    <Build Include="DB-Learning\01_Schema_RBAC_Bootstrap.sql" />
+    <Build Include="DB-Learning\02_TSQL_Fundamentals_And_Pivot.sql" />
+    <Build Include="DB-Learning\03_Joins.sql" />
+    <Build Include="DB-Learning\04_StoredProcs_And_Functions.sql" />
+    <Build Include="DB-Learning\05_Triggers.sql" />
+    <Build Include="DB-Learning\06_Views_TempTables_CTEs_DerivedTables.sql" />
+    <Build Include="DB-Learning\07_Window_Functions.sql" />
+    <Build Include="DB-Learning\08_Specialized_Tables_InMemory_Temporal_Ledger_Graph.sql" />
+    <Build Include="DB-Learning\09_Advanced_JSON_Regex_Fuzzy_Graph_Correlated_TryCatch.sql" />
+    <Build Include="DB-Learning\10_Indexes_And_Execution_Plans.sql" />
+    <Build Include="DB-Learning\11_Transactions_And_Isolation_Levels.sql" />
+    <Build Include="DB-Learning\12_Constraints_Computed_Columns_Sequences.sql" />
+    <Build Include="DB-Learning\13_Performance_Tuning_Stats_Partitioning_Columnstore.sql" />
+    <Build Include="DB-Learning\14_SetOps_Apply_GroupingSets_Merge.sql" />
+    <Build Include="DB-Learning\15_Dynamic_SQL_Cursors_TVPs.sql" />
+    <Build Include="DB-Learning\16_Security_RLS_DDM_Encryption.sql" />
+    <Build Include="DB-Learning\17_Admin_Backups_DMVs_Monitoring.sql" />
+    <Build Include="DB-Learning\18_CDC_FullText_External_Tables.sql" />
+    <Build Include="DB-Learning\19_Data_Modeling_Normalization.sql" />
+    <Build Include="DB-Learning\20_System_Procs_System_Tables_Shortcuts.sql" />
+    <Build Include="DB-Learning\21_Setup_Encryption_Keys.sql" />
+    <Build Include="DB-Learning\22_Encryption_StoredProcedures.sql" />
+    <Build Include="DB-Learning\23_Encryption_Examples.sql" />
+    <Build Include="DB-Learning\24_Encryption_Utilities.sql" />
+    <Build Include="DB-Learning\README_Encryption.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PreDeploy Include="Scripts\PreDeployment\Script.PreDeployment1.sql" />
+    <None Include="DB-Learning\Script.PreDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Scripts\PostDeployment\Script.PostDeployment1.sql" />
+    <None Include="DB-Learning\Script.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\Data\default-user.sql" />
+    <None Include="ENCRYPTION-SETUP-README.md" />
+  </ItemGroup>
+</Project>
