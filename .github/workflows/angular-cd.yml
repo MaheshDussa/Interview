@@ -1,0 +1,178 @@
+name: Angular CD Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment Environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  NODE_VERSION: '18.x'
+  PROJECT_PATH: 'feapps/TaskMgmt-1'
+  BUILD_OUTPUT_PATH: 'dist/task-mgmt'
+  BROWSER_OUTPUT_PATH: 'dist/task-mgmt/browser'
+  ARTIFACTS_PATH: 'artifacts'
+  DEPLOY_PACKAGE_NAME: 'angular-app.zip'
+  # ===== CHANGE THESE VALUES =====
+  AZURE_RESOURCE_GROUP: 'your-resource-group-name'
+  AZURE_STAGING_APP_SERVICE: 'your-staging-angular-app-service'
+  AZURE_PRODUCTION_APP_SERVICE: 'your-production-angular-app-service'
+  # Required secret: AZURE_CREDENTIALS
+  # ===============================
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    name: Deploy Angular to Staging
+    if: github.event.inputs.environment == 'staging'
+    environment:
+      name: staging
+      url: https://${{ env.AZURE_STAGING_APP_SERVICE }}.azurewebsites.net
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: '${{ env.PROJECT_PATH }}/package-lock.json'
+
+    - name: Install dependencies
+      run: npm ci --prefix "${{ env.PROJECT_PATH }}"
+
+    - name: Build production
+      run: npm run build --prefix "${{ env.PROJECT_PATH }}"
+
+    - name: Verify browser build output
+      run: |
+        if [ ! -d "${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}" ]; then
+          echo "Expected browser build output not found at ${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}"
+          exit 1
+        fi
+        ls -la "${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}"
+
+    - name: Create deployment package
+      run: |
+        mkdir -p "${{ env.ARTIFACTS_PATH }}"
+        cd "${{ env.PROJECT_PATH }}"
+        zip -r "../../${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}" "${{ env.BROWSER_OUTPUT_PATH }}"
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure App Service - Staging
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.AZURE_STAGING_APP_SERVICE }}
+        package: ${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}
+        resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
+
+    - name: Verify staging deployment
+      run: |
+        curl -f https://${{ env.AZURE_STAGING_APP_SERVICE }}.azurewebsites.net/ || echo "Application is starting"
+      continue-on-error: true
+
+    - name: Generate staging deployment summary
+      if: always()
+      run: |
+        echo "# Angular Staging Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: Staging" >> $GITHUB_STEP_SUMMARY
+        echo "- **App Service**: ${{ env.AZURE_STAGING_APP_SERVICE }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Build Output**: ${{ env.BROWSER_OUTPUT_PATH }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Package**: ${{ env.DEPLOY_PACKAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **URL**: https://${{ env.AZURE_STAGING_APP_SERVICE }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
+        echo "- **Required Secret**: AZURE_CREDENTIALS" >> $GITHUB_STEP_SUMMARY
+        echo "- **Timestamp**: $(date)" >> $GITHUB_STEP_SUMMARY
+
+    - name: Azure Logout
+      if: always()
+      run: |
+        az logout
+        az cache purge
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    name: Deploy Angular to Production
+    if: github.event.inputs.environment == 'production'
+    environment:
+      name: production
+      url: https://${{ env.AZURE_PRODUCTION_APP_SERVICE }}.azurewebsites.net
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: '${{ env.PROJECT_PATH }}/package-lock.json'
+
+    - name: Install dependencies
+      run: npm ci --prefix "${{ env.PROJECT_PATH }}"
+
+    - name: Build production
+      run: npm run build --prefix "${{ env.PROJECT_PATH }}"
+
+    - name: Verify browser build output
+      run: |
+        if [ ! -d "${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}" ]; then
+          echo "Expected browser build output not found at ${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}"
+          exit 1
+        fi
+        ls -la "${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}"
+
+    - name: Create deployment package
+      run: |
+        mkdir -p "${{ env.ARTIFACTS_PATH }}"
+        cd "${{ env.PROJECT_PATH }}"
+        zip -r "../../${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}" "${{ env.BROWSER_OUTPUT_PATH }}"
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure App Service - Production
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.AZURE_PRODUCTION_APP_SERVICE }}
+        package: ${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}
+        resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
+
+    - name: Verify production deployment
+      run: |
+        curl -f https://${{ env.AZURE_PRODUCTION_APP_SERVICE }}.azurewebsites.net/ || echo "Application is starting"
+      continue-on-error: true
+
+    - name: Generate production deployment summary
+      if: always()
+      run: |
+        echo "# Angular Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
+        echo "- **App Service**: ${{ env.AZURE_PRODUCTION_APP_SERVICE }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Build Output**: ${{ env.BROWSER_OUTPUT_PATH }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Package**: ${{ env.DEPLOY_PACKAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **URL**: https://${{ env.AZURE_PRODUCTION_APP_SERVICE }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
+        echo "- **Required Secret**: AZURE_CREDENTIALS" >> $GITHUB_STEP_SUMMARY
+        echo "- **Timestamp**: $(date)" >> $GITHUB_STEP_SUMMARY
+
+    - name: Azure Logout
+      if: always()
+      run: |
+        az logout
+        az cache purge

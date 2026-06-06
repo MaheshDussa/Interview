@@ -1,0 +1,185 @@
+name: Database CD Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment Environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  PROJECT_FILE: 'dsa/dblearning/dblearning.sqlproj'
+  BUILD_OUTPUT_PATH: 'dsa/dblearning/bin/Release'
+  DACPAC_NAME: 'dblearning.dacpac'
+  # ===== CHANGE THESE VALUES =====
+  AZURE_SQL_SERVER_FQDN: 'your-server-name.database.windows.net'
+  AZURE_SQL_ADMIN_USERNAME: 'your-sql-admin-user'
+  AZURE_STAGING_DATABASE_NAME: 'your-staging-database-name'
+  AZURE_PRODUCTION_DATABASE_NAME: 'your-production-database-name'
+  # Required secret: AZURE_CREDENTIALS
+  # Required environment secret: AZURE_SQL_ADMIN_PASSWORD
+  # Ensure Azure SQL firewall rules allow the GitHub runner, or enable Azure services access.
+  # ===============================
+
+jobs:
+  deploy-staging:
+    runs-on: windows-latest
+    name: Deploy Database to Staging
+    if: github.event.inputs.environment == 'staging'
+    environment:
+      name: staging
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Install SqlPackage
+      shell: pwsh
+      run: dotnet tool install --global microsoft.sqlpackage
+
+    - name: Build database project
+      run: msbuild "${{ env.PROJECT_FILE }}" /p:Configuration=Release /p:Platform=AnyCPU /m
+
+    - name: Verify DACPAC output
+      shell: pwsh
+      run: |
+        $dacpacPath = Join-Path $env:GITHUB_WORKSPACE "${{ env.BUILD_OUTPUT_PATH }}/${{ env.DACPAC_NAME }}"
+        if (-not (Test-Path $dacpacPath)) {
+          Write-Error "DACPAC not found at expected path: $dacpacPath"
+        }
+        Write-Host "DACPAC found at: $dacpacPath"
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Publish DACPAC to staging database
+      shell: pwsh
+      env:
+        SQL_PASSWORD: ${{ secrets.AZURE_SQL_ADMIN_PASSWORD }}
+      run: |
+        $env:PATH = "$env:USERPROFILE\.dotnet\tools;$env:PATH"
+        $dacpacPath = Join-Path $env:GITHUB_WORKSPACE "${{ env.BUILD_OUTPUT_PATH }}/${{ env.DACPAC_NAME }}"
+
+        sqlpackage /Action:Publish `
+          /SourceFile:"$dacpacPath" `
+          /TargetServerName:"${{ env.AZURE_SQL_SERVER_FQDN }}" `
+          /TargetDatabaseName:"${{ env.AZURE_STAGING_DATABASE_NAME }}" `
+          /TargetUser:"${{ env.AZURE_SQL_ADMIN_USERNAME }}" `
+          /TargetPassword:"$env:SQL_PASSWORD" `
+          /p:BlockOnPossibleDataLoss=false `
+          /p:DropObjectsNotInSource=false
+
+    - name: Generate staging deployment summary
+      if: always()
+      shell: pwsh
+      run: |
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '# Database Staging Deployment Summary'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value ''
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Environment**: Staging'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Server**: ${{ env.AZURE_SQL_SERVER_FQDN }}'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Database**: ${{ env.AZURE_STAGING_DATABASE_NAME }}'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Artifact**: ${{ env.DACPAC_NAME }}'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Required Secret**: AZURE_CREDENTIALS'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Required Environment Secret**: AZURE_SQL_ADMIN_PASSWORD'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Timestamp**: $(Get-Date -Format u)'
+
+    - name: Azure Logout
+      if: always()
+      shell: pwsh
+      run: |
+        az logout
+        az cache purge
+
+  deploy-production:
+    runs-on: windows-latest
+    name: Deploy Database to Production
+    if: github.event.inputs.environment == 'production'
+    environment:
+      name: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Install SqlPackage
+      shell: pwsh
+      run: dotnet tool install --global microsoft.sqlpackage
+
+    - name: Build database project
+      run: msbuild "${{ env.PROJECT_FILE }}" /p:Configuration=Release /p:Platform=AnyCPU /m
+
+    - name: Verify DACPAC output
+      shell: pwsh
+      run: |
+        $dacpacPath = Join-Path $env:GITHUB_WORKSPACE "${{ env.BUILD_OUTPUT_PATH }}/${{ env.DACPAC_NAME }}"
+        if (-not (Test-Path $dacpacPath)) {
+          Write-Error "DACPAC not found at expected path: $dacpacPath"
+        }
+        Write-Host "DACPAC found at: $dacpacPath"
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Publish DACPAC to production database
+      shell: pwsh
+      env:
+        SQL_PASSWORD: ${{ secrets.AZURE_SQL_ADMIN_PASSWORD }}
+      run: |
+        $env:PATH = "$env:USERPROFILE\.dotnet\tools;$env:PATH"
+        $dacpacPath = Join-Path $env:GITHUB_WORKSPACE "${{ env.BUILD_OUTPUT_PATH }}/${{ env.DACPAC_NAME }}"
+
+        sqlpackage /Action:Publish `
+          /SourceFile:"$dacpacPath" `
+          /TargetServerName:"${{ env.AZURE_SQL_SERVER_FQDN }}" `
+          /TargetDatabaseName:"${{ env.AZURE_PRODUCTION_DATABASE_NAME }}" `
+          /TargetUser:"${{ env.AZURE_SQL_ADMIN_USERNAME }}" `
+          /TargetPassword:"$env:SQL_PASSWORD" `
+          /p:BlockOnPossibleDataLoss=false `
+          /p:DropObjectsNotInSource=false
+
+    - name: Generate production deployment summary
+      if: always()
+      shell: pwsh
+      run: |
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '# Database Production Deployment Summary'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value ''
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Environment**: Production'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Server**: ${{ env.AZURE_SQL_SERVER_FQDN }}'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Database**: ${{ env.AZURE_PRODUCTION_DATABASE_NAME }}'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Artifact**: ${{ env.DACPAC_NAME }}'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Required Secret**: AZURE_CREDENTIALS'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Required Environment Secret**: AZURE_SQL_ADMIN_PASSWORD'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Timestamp**: $(Get-Date -Format u)'
+
+    - name: Azure Logout
+      if: always()
+      shell: pwsh
+      run: |
+        az logout
+        az cache purge

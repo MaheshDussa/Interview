@@ -1,0 +1,123 @@
+name: Database CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'dsa/dblearning/**'
+      - '.github/workflows/db-ci.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'dsa/dblearning/**'
+  workflow_dispatch:
+
+env:
+  PROJECT_PATH: 'dsa/dblearning'
+  PROJECT_FILE: 'dsa/dblearning/dblearning.sqlproj'
+  ARTIFACTS_PATH: 'artifacts'
+  BUILD_OUTPUT_PATH: 'dsa/dblearning/bin/Release'
+  DACPAC_NAME: 'dblearning.dacpac'
+  BUILD_SCRIPT_NAME: 'dblearning.sql'
+
+jobs:
+  build-and-validate:
+    runs-on: windows-latest
+    name: Build & Validate Database Project
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build database project
+      run: msbuild "${{ env.PROJECT_FILE }}" /p:Configuration=Release /p:Platform=AnyCPU /m
+
+    - name: Verify DACPAC output
+      shell: pwsh
+      run: |
+        $dacpacPath = Join-Path $env:GITHUB_WORKSPACE "${{ env.BUILD_OUTPUT_PATH }}/${{ env.DACPAC_NAME }}"
+        $buildScriptPath = Join-Path $env:GITHUB_WORKSPACE "${{ env.BUILD_OUTPUT_PATH }}/${{ env.BUILD_SCRIPT_NAME }}"
+
+        if (-not (Test-Path $dacpacPath)) {
+          Write-Error "DACPAC not found at expected path: $dacpacPath"
+        }
+
+        if (-not (Test-Path $buildScriptPath)) {
+          Write-Error "Build script not found at expected path: $buildScriptPath"
+        }
+
+        Write-Host "DACPAC found at: $dacpacPath"
+        Write-Host "Build script found at: $buildScriptPath"
+
+    - name: Upload database build output
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: database-build-output
+        path: |
+          ${{ env.BUILD_OUTPUT_PATH }}/${{ env.DACPAC_NAME }}
+          ${{ env.BUILD_OUTPUT_PATH }}/${{ env.BUILD_SCRIPT_NAME }}
+        if-no-files-found: error
+        retention-days: 30
+
+  publish-artifacts:
+    runs-on: windows-latest
+    name: Publish Database Artifacts
+    needs: build-and-validate
+    if: success()
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build database project
+      run: msbuild "${{ env.PROJECT_FILE }}" /p:Configuration=Release /p:Platform=AnyCPU /m
+
+    - name: Create deployment package
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Path "${{ env.ARTIFACTS_PATH }}" -Force | Out-Null
+        $packagePath = Join-Path $env:GITHUB_WORKSPACE "${{ env.ARTIFACTS_PATH }}/database-build.zip"
+        $sourcePaths = @(
+          (Join-Path $env:GITHUB_WORKSPACE "${{ env.BUILD_OUTPUT_PATH }}/${{ env.DACPAC_NAME }}"),
+          (Join-Path $env:GITHUB_WORKSPACE "${{ env.BUILD_OUTPUT_PATH }}/${{ env.BUILD_SCRIPT_NAME }}")
+        )
+
+        Compress-Archive -Path $sourcePaths -DestinationPath $packagePath -Force
+        Get-Item $packagePath | Select-Object FullName, Length
+
+    - name: Upload database artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: database-artifacts
+        path: ${{ env.ARTIFACTS_PATH }}/database-build.zip
+        retention-days: 30
+
+    - name: Create GitHub Release (on tag push)
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ${{ env.ARTIFACTS_PATH }}/database-build.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Generate Build Summary
+      if: always()
+      shell: pwsh
+      run: |
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '# Database Build Summary'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value ''
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Build Status**: Success'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Project**: dsa/dblearning/dblearning.sqlproj'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Primary Artifact**: dblearning.dacpac'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Deployment Script**: dblearning.sql'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Runner**: windows-latest'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "- **Timestamp**: $(Get-Date -Format u)"
