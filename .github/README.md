@@ -19,13 +19,13 @@ Purpose: validates the .NET API in `netapps/WebApplication1` and publishes a bui
 
 Key points:
 - Runs on `ubuntu-latest`.
-- Restores, builds, runs tests, and runs a non-blocking formatting check.
+- Restores, builds, runs tests, and packages the publish output.
 - Packages the publish output as `artifacts/webapplication1-release.tar.gz`.
 - Uploads test results and published artifacts.
 
 Notes:
 - Triggered only when the API project or the workflow file changes.
-- The test and formatting steps are configured with `continue-on-error: true`, so they report issues without failing the whole job.
+- The test step is configured with `continue-on-error: true`, so it reports issues without failing the whole job.
 
 ## `dotnet-cd.yml`
 
@@ -33,7 +33,8 @@ Purpose: deploys the .NET API to Azure App Service.
 
 Key points:
 - Uses `workflow_dispatch` with `staging` or `production`.
-- Rebuilds and publishes the API before deployment.
+- Requires the `artifact_run_id` input from a successful `.NET` CI run.
+- Downloads the `dotnet-artifacts` package from CI and deploys it without rebuilding.
 - Deploys with `azure/webapps-deploy@v3`.
 - Includes a basic post-deployment health check.
 
@@ -52,7 +53,7 @@ Key points:
 - Runs on `ubuntu-latest` with Node `18.x`.
 - Installs dependencies with `npm ci`.
 - Runs tests in non-blocking mode.
-- Builds the production bundle and uploads both a tarball and the `dist` folder.
+- Builds the production bundle and uploads a deployable `angular-app.zip` artifact.
 
 Notes:
 - Triggered only when the Angular app or the workflow file changes.
@@ -64,8 +65,8 @@ Purpose: deploys the Angular app to Azure App Service.
 
 Key points:
 - Uses `workflow_dispatch` with `staging` or `production`.
-- Rebuilds the Angular app during deployment.
-- Packages `dist/task-mgmt/browser` as `artifacts/angular-app.zip`.
+- Requires the `artifact_run_id` input from a successful Angular CI run.
+- Downloads `angular-app.zip` from CI and deploys it without rebuilding.
 - Deploys with `azure/webapps-deploy@v3`.
 
 Required configuration:
@@ -96,8 +97,9 @@ Purpose: publishes the built DACPAC to Azure SQL Database.
 Key points:
 - Uses `workflow_dispatch` with `staging` or `production`.
 - Runs on `windows-latest`.
+- Requires the `artifact_run_id` input from a successful database CI run.
 - Installs `microsoft.sqlpackage` as a .NET global tool.
-- Rebuilds the database project, verifies the DACPAC, and publishes it with `sqlpackage`.
+- Downloads `database-build.zip`, extracts the DACPAC, and publishes it with `sqlpackage`.
 
 Required configuration:
 - GitHub secret: `AZURE_CREDENTIALS`.
@@ -113,6 +115,7 @@ Operational notes:
 Before running the CD workflows:
 
 1. Replace placeholder Azure resource values in the deployment workflows.
-2. Add the required GitHub secrets.
-3. If you use GitHub Environments, add environment approvals and environment-scoped secrets for `staging` and `production`.
-4. Confirm that Azure App Service and Azure SQL networking rules allow deployment from GitHub Actions.
+2. Run the matching CI workflow and note the CI run ID for the artifact you want to deploy.
+3. Add the required GitHub secrets.
+4. If you use GitHub Environments, add environment approvals and environment-scoped secrets for `staging` and `production`.
+5. Confirm that Azure App Service and Azure SQL networking rules allow deployment from GitHub Actions.

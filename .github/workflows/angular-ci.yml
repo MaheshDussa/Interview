@@ -17,6 +17,8 @@ env:
   PROJECT_PATH: 'feapps/TaskMgmt-1'
   ARTIFACTS_PATH: 'artifacts'
   BUILD_OUTPUT_PATH: 'dist/task-mgmt'
+  BROWSER_OUTPUT_PATH: 'dist/task-mgmt/browser'
+  DEPLOY_PACKAGE_NAME: 'angular-app.zip'
 
 jobs:
   build-and-test:
@@ -45,12 +47,6 @@ jobs:
 
     - name: Build production
       run: npm run build --prefix "${{ env.PROJECT_PATH }}"
-
-    - name: Code Quality - SonarQube (Optional)
-      run: |
-        echo "SonarQube scan can be integrated here"
-        echo "Configure when ready with SonarQube instance"
-      continue-on-error: true
 
     - name: Upload test & coverage results
       if: always()
@@ -101,33 +97,18 @@ jobs:
     - name: Create build package
       run: |
         mkdir -p ${{ env.ARTIFACTS_PATH }}
-        cd "${{ env.PROJECT_PATH }}"
-        tar -czf "../../${{ env.ARTIFACTS_PATH }}/angular-app-build.tar.gz" "${{ env.BUILD_OUTPUT_PATH }}"
+        rm -f "${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}"
+        cd "${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}"
+        zip -r "${GITHUB_WORKSPACE}/${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}" .
         echo "✅ Build package created successfully"
-        ls -lh "../../${{ env.ARTIFACTS_PATH }}/angular-app-build.tar.gz"
+        ls -lh "${GITHUB_WORKSPACE}/${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}"
 
-    - name: Upload build artifacts (compressed)
+    - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: angular-build
-        path: ${{ env.ARTIFACTS_PATH }}/angular-app-build.tar.gz
+        name: angular-artifacts
+        path: ${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}
         retention-days: 30
-
-    - name: Upload dist folder directly
-      uses: actions/upload-artifact@v4
-      with:
-        name: angular-dist
-        path: ${{ env.PROJECT_PATH }}/${{ env.BUILD_OUTPUT_PATH }}/
-        if-no-files-found: warn
-        retention-days: 30
-
-    - name: Create GitHub Release (on tag push)
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: softprops/action-gh-release@v1
-      with:
-        files: ${{ env.ARTIFACTS_PATH }}/angular-app-build.tar.gz
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Generate Build Summary
       if: always()
@@ -136,5 +117,5 @@ jobs:
         echo "- **Build Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
         echo "- **Build Output**: ${{ env.BUILD_OUTPUT_PATH }}/" >> $GITHUB_STEP_SUMMARY
         echo "- **Node Version**: ${{ env.NODE_VERSION }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Artifacts Available**: angular-build.tar.gz & angular-dist/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Deployment Artifact**: ${{ env.DEPLOY_PACKAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Timestamp**: $(date)" >> $GITHUB_STEP_SUMMARY

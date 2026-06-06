@@ -11,11 +11,19 @@ on:
         options:
           - staging
           - production
+      artifact_run_id:
+        description: 'Run ID of the .NET CI workflow artifact to deploy'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
 
 env:
-  DOTNET_VERSION: '10.0.x'
-  PROJECT_PATH: 'netapps/WebApplication1'
   ARTIFACTS_PATH: 'artifacts'
+  DEPLOY_PACKAGE_NAME: 'webapplication1-release.tar.gz'
+  EXTRACTED_PATH: 'artifacts/extracted'
   # ===== CHANGE THESE VALUES =====
   AZURE_RESOURCE_GROUP: 'rg-learn-md'
   AZURE_STAGING_APP_SERVICE: 'mdussa-task-api'
@@ -32,22 +40,20 @@ jobs:
       url: https://${{ env.AZURE_STAGING_APP_SERVICE }}.azurewebsites.net
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+    - name: Download CI artifact
+      uses: actions/download-artifact@v4
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        repository: ${{ github.repository }}
+        run-id: ${{ inputs.artifact_run_id }}
+        name: dotnet-artifacts
+        path: ${{ env.ARTIFACTS_PATH }}
 
-    - name: Restore dependencies
-      run: dotnet restore "${{ env.PROJECT_PATH }}"
-
-    - name: Build Release
-      run: dotnet build "${{ env.PROJECT_PATH }}" --configuration Release --no-restore
-
-    - name: Publish Release
-      run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration Release --output "${{ env.ARTIFACTS_PATH }}/publish" --self-contained false
+    - name: Extract deployment package
+      run: |
+        mkdir -p "${{ env.EXTRACTED_PATH }}"
+        tar -xzf "${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}" -C "${{ env.EXTRACTED_PATH }}"
+        ls -la "${{ env.EXTRACTED_PATH }}/publish"
 
     - name: Azure Login
       uses: azure/login@v2
@@ -58,7 +64,7 @@ jobs:
       uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ env.AZURE_STAGING_APP_SERVICE }}
-        package: ${{ env.ARTIFACTS_PATH }}/publish
+        package: ${{ env.EXTRACTED_PATH }}/publish
         resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
 
     - name: Verify Staging Deployment
@@ -76,6 +82,7 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "- **Environment**: 🔵 Staging" >> $GITHUB_STEP_SUMMARY
         echo "- **App Service**: ${{ env.AZURE_STAGING_APP_SERVICE }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Artifact Run ID**: ${{ inputs.artifact_run_id }}" >> $GITHUB_STEP_SUMMARY
         echo "- **URL**: https://${{ env.AZURE_STAGING_APP_SERVICE }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
         echo "- **Status**: ✅ Deployment Complete" >> $GITHUB_STEP_SUMMARY
         echo "- **Timestamp**: $(date)" >> $GITHUB_STEP_SUMMARY
@@ -99,22 +106,20 @@ jobs:
       url: https://${{ env.AZURE_PRODUCTION_APP_SERVICE }}.azurewebsites.net
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+    - name: Download CI artifact
+      uses: actions/download-artifact@v4
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        repository: ${{ github.repository }}
+        run-id: ${{ inputs.artifact_run_id }}
+        name: dotnet-artifacts
+        path: ${{ env.ARTIFACTS_PATH }}
 
-    - name: Restore dependencies
-      run: dotnet restore "${{ env.PROJECT_PATH }}"
-
-    - name: Build Release
-      run: dotnet build "${{ env.PROJECT_PATH }}" --configuration Release --no-restore
-
-    - name: Publish Release
-      run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration Release --output "${{ env.ARTIFACTS_PATH }}/publish" --self-contained false
+    - name: Extract deployment package
+      run: |
+        mkdir -p "${{ env.EXTRACTED_PATH }}"
+        tar -xzf "${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}" -C "${{ env.EXTRACTED_PATH }}"
+        ls -la "${{ env.EXTRACTED_PATH }}/publish"
 
     - name: Azure Login
       uses: azure/login@v2
@@ -125,7 +130,7 @@ jobs:
       uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ env.AZURE_PRODUCTION_APP_SERVICE }}
-        package: ${{ env.ARTIFACTS_PATH }}/publish
+        package: ${{ env.EXTRACTED_PATH }}/publish
         resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
 
     - name: Verify Production Deployment
@@ -143,6 +148,7 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "- **Environment**: 🔴 Production" >> $GITHUB_STEP_SUMMARY
         echo "- **App Service**: ${{ env.AZURE_PRODUCTION_APP_SERVICE }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Artifact Run ID**: ${{ inputs.artifact_run_id }}" >> $GITHUB_STEP_SUMMARY
         echo "- **URL**: https://${{ env.AZURE_PRODUCTION_APP_SERVICE }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
         echo "- **Status**: ✅ Deployment Complete" >> $GITHUB_STEP_SUMMARY
         echo "- **Timestamp**: $(date)" >> $GITHUB_STEP_SUMMARY

@@ -11,12 +11,16 @@ on:
         options:
           - staging
           - production
+      artifact_run_id:
+        description: 'Run ID of the Angular CI workflow artifact to deploy'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
 
 env:
-  NODE_VERSION: '18.x'
-  PROJECT_PATH: 'feapps/TaskMgmt-1'
-  BUILD_OUTPUT_PATH: 'dist/task-mgmt'
-  BROWSER_OUTPUT_PATH: 'dist/task-mgmt/browser'
   ARTIFACTS_PATH: 'artifacts'
   DEPLOY_PACKAGE_NAME: 'angular-app.zip'
   # ===== CHANGE THESE VALUES =====
@@ -36,36 +40,22 @@ jobs:
       url: https://${{ env.AZURE_STAGING_APP_SERVICE }}.azurewebsites.net
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    - name: Download CI artifact
+      uses: actions/download-artifact@v4
       with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: '${{ env.PROJECT_PATH }}/package-lock.json'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        repository: ${{ github.repository }}
+        run-id: ${{ inputs.artifact_run_id }}
+        name: angular-artifacts
+        path: ${{ env.ARTIFACTS_PATH }}
 
-    - name: Install dependencies
-      run: npm ci --prefix "${{ env.PROJECT_PATH }}"
-
-    - name: Build production
-      run: npm run build --prefix "${{ env.PROJECT_PATH }}"
-
-    - name: Verify browser build output
+    - name: Verify deployment package
       run: |
-        if [ ! -d "${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}" ]; then
-          echo "Expected browser build output not found at ${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}"
+        if [ ! -f "${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}" ]; then
+          echo "Deployment package not found at ${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}"
           exit 1
         fi
-        ls -la "${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}"
-
-    - name: Create deployment package
-      run: |
-        mkdir -p "${{ env.ARTIFACTS_PATH }}"
-        rm -f "${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}"
-        cd "${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}"
-        zip -r "${GITHUB_WORKSPACE}/${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}" .
+        ls -lh "${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}"
 
     - name: Azure Login
       uses: azure/login@v2
@@ -91,7 +81,7 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "- **Environment**: Staging" >> $GITHUB_STEP_SUMMARY
         echo "- **App Service**: ${{ env.AZURE_STAGING_APP_SERVICE }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Build Output**: ${{ env.BROWSER_OUTPUT_PATH }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Artifact Run ID**: ${{ inputs.artifact_run_id }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Package**: ${{ env.DEPLOY_PACKAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
         echo "- **URL**: https://${{ env.AZURE_STAGING_APP_SERVICE }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
         echo "- **Required Secret**: AZURE_CREDENTIALS" >> $GITHUB_STEP_SUMMARY
@@ -112,36 +102,22 @@ jobs:
       url: https://${{ env.AZURE_PRODUCTION_APP_SERVICE }}.azurewebsites.net
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    - name: Download CI artifact
+      uses: actions/download-artifact@v4
       with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: '${{ env.PROJECT_PATH }}/package-lock.json'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        repository: ${{ github.repository }}
+        run-id: ${{ inputs.artifact_run_id }}
+        name: angular-artifacts
+        path: ${{ env.ARTIFACTS_PATH }}
 
-    - name: Install dependencies
-      run: npm ci --prefix "${{ env.PROJECT_PATH }}"
-
-    - name: Build production
-      run: npm run build --prefix "${{ env.PROJECT_PATH }}"
-
-    - name: Verify browser build output
+    - name: Verify deployment package
       run: |
-        if [ ! -d "${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}" ]; then
-          echo "Expected browser build output not found at ${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}"
+        if [ ! -f "${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}" ]; then
+          echo "Deployment package not found at ${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}"
           exit 1
         fi
-        ls -la "${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}"
-
-    - name: Create deployment package
-      run: |
-        mkdir -p "${{ env.ARTIFACTS_PATH }}"
-        rm -f "${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}"
-        cd "${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}"
-        zip -r "${GITHUB_WORKSPACE}/${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}" .
+        ls -lh "${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}"
 
     - name: Azure Login
       uses: azure/login@v2
@@ -167,7 +143,7 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
         echo "- **App Service**: ${{ env.AZURE_PRODUCTION_APP_SERVICE }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Build Output**: ${{ env.BROWSER_OUTPUT_PATH }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Artifact Run ID**: ${{ inputs.artifact_run_id }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Package**: ${{ env.DEPLOY_PACKAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
         echo "- **URL**: https://${{ env.AZURE_PRODUCTION_APP_SERVICE }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
         echo "- **Required Secret**: AZURE_CREDENTIALS" >> $GITHUB_STEP_SUMMARY
