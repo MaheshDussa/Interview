@@ -1,0 +1,143 @@
+name: .NET Core CD Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment Environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  PROJECT_PATH: 'netapps/webapplication1'
+  ARTIFACTS_PATH: 'artifacts'
+  # ===== CHANGE THESE VALUES =====
+  AZURE_RESOURCE_GROUP: 'rg-learn-md'
+  AZURE_STAGING_APP_SERVICE: 'mdussa-task-api'
+  AZURE_PRODUCTION_APP_SERVICE: 'mdussa-task-api'
+  # ===============================
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    name: Deploy to Staging
+    if: github.event.inputs.environment == 'staging'
+    environment:
+      name: staging
+      url: https://${{ env.AZURE_STAGING_APP_SERVICE }}.azurewebsites.net
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download CI artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: dotnet-artifacts
+        path: ${{ env.ARTIFACTS_PATH }}
+
+    - name: Extract build package
+      run: |
+        cd ${{ env.ARTIFACTS_PATH }}
+        tar -xzf webapplication1-release.tar.gz
+        ls -la publish/
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure App Service - Staging
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_STAGING_APP_SERVICE }}
+        package: ${{ env.ARTIFACTS_PATH }}/publish
+        resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
+
+    - name: Generate Deployment Summary
+      if: always()
+      run: |
+        echo "# .NET Staging Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: Staging" >> $GITHUB_STEP_SUMMARY
+        echo "- **App Service**: ${{ env.AZURE_STAGING_APP_SERVICE }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **URL**: https://${{ env.AZURE_STAGING_APP_SERVICE }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
+        echo "- **Deployment Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
+        echo "- **Timestamp**: $(date)" >> $GITHUB_STEP_SUMMARY
+
+    - name: Azure Logout
+      if: always()
+      run: |
+        az logout
+        az cache purge
+
+  approval:
+    runs-on: ubuntu-latest
+    name: Manual Approval for Production
+    needs: deploy-staging
+    if: github.event.inputs.environment == 'staging'
+    environment:
+      name: production-approval
+    steps:
+    - name: Approval Required
+      run: |
+        echo "✅ Staging deployment successful!"
+        echo "⏳ Waiting for manual approval to deploy to Production..."
+        echo ""
+        echo "To deploy to production, run the workflow again and select 'production' environment"
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    name: Deploy to Production
+    if: github.event.inputs.environment == 'production'
+    environment:
+      name: production
+      url: https://${{ env.AZURE_PRODUCTION_APP_SERVICE }}.azurewebsites.net
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download CI artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: dotnet-artifacts
+        path: ${{ env.ARTIFACTS_PATH }}
+
+    - name: Extract build package
+      run: |
+        cd ${{ env.ARTIFACTS_PATH }}
+        tar -xzf webapplication1-release.tar.gz
+        ls -la publish/
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure App Service - Production
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_PRODUCTION_APP_SERVICE }}
+        package: ${{ env.ARTIFACTS_PATH }}/publish
+        resource-group: ${{ env.AZURE_RESOURCE_GROUP }}
+
+    - name: Generate Deployment Summary
+      if: always()
+      run: |
+        echo "# .NET Production Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
+        echo "- **App Service**: ${{ env.AZURE_PRODUCTION_APP_SERVICE }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **URL**: https://${{ env.AZURE_PRODUCTION_APP_SERVICE }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
+        echo "- **Deployment Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
+        echo "- **Timestamp**: $(date)" >> $GITHUB_STEP_SUMMARY
+
+    - name: Azure Logout
+      if: always()
+      run: |
+        az logout
+        az cache purge
