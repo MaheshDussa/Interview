@@ -16,7 +16,7 @@ env:
   NODE_VERSION: '18.x'
   PROJECT_PATH: 'feapps/TaskMgmt-1'
   ARTIFACTS_PATH: 'artifacts'
-  BUILD_OUTPUT_PATH: 'dist/task-mgmt'
+  BUILD_OUTPUT_PATH: 'task-mgmt'
 
 jobs:
   build-and-test:

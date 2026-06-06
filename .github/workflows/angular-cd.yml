@@ -15,8 +15,8 @@ on:
 env:
   NODE_VERSION: '18.x'
   PROJECT_PATH: 'feapps/TaskMgmt-1'
-  BUILD_OUTPUT_PATH: 'dist/task-mgmt'
-  BROWSER_OUTPUT_PATH: 'dist/task-mgmt/browser'
+  BUILD_OUTPUT_PATH: 'task-mgmt'
+  BROWSER_OUTPUT_PATH: 'task-mgmt/browser'
   ARTIFACTS_PATH: 'artifacts'
   DEPLOY_PACKAGE_NAME: 'angular-app.zip'
   # ===== CHANGE THESE VALUES =====
