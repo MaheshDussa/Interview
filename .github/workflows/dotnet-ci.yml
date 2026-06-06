@@ -14,7 +14,7 @@ on:
 
 env:
   DOTNET_VERSION: '10.0.x'
-  PROJECT_PATH: 'netapps/webapplication1'
+  PROJECT_PATH: 'netapps/WebApplication1'
   ARTIFACTS_PATH: 'artifacts'
 
 jobs:
