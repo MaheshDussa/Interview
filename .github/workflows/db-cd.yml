@@ -18,10 +18,10 @@ env:
   BUILD_OUTPUT_PATH: 'dsa/dblearning/bin/Release'
   DACPAC_NAME: 'dblearning.dacpac'
   # ===== CHANGE THESE VALUES =====
-  AZURE_SQL_SERVER_FQDN: 'your-server-name.database.windows.net'
-  AZURE_SQL_ADMIN_USERNAME: 'your-sql-admin-user'
-  AZURE_STAGING_DATABASE_NAME: 'your-staging-database-name'
-  AZURE_PRODUCTION_DATABASE_NAME: 'your-production-database-name'
+  AZURE_SQL_SERVER_FQDN: 'mdussa-tasks.database.windows.net'
+  AZURE_SQL_ADMIN_USERNAME: 'mdussa-admin'
+  AZURE_STAGING_DATABASE_NAME: 'learning'
+  AZURE_PRODUCTION_DATABASE_NAME: 'learning'
   # Required secret: AZURE_CREDENTIALS
   # Required environment secret: AZURE_SQL_ADMIN_PASSWORD
   # Ensure Azure SQL firewall rules allow the GitHub runner, or enable Azure services access.
