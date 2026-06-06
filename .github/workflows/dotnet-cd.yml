@@ -17,9 +17,9 @@ env:
   PROJECT_PATH: 'netapps/WebApplication1'
   ARTIFACTS_PATH: 'artifacts'
   # ===== CHANGE THESE VALUES =====
-  AZURE_RESOURCE_GROUP: 'your-resource-group-name'
-  AZURE_STAGING_APP_SERVICE: 'your-dotnet-app-staging'
-  AZURE_PRODUCTION_APP_SERVICE: 'your-dotnet-app-production'
+  AZURE_RESOURCE_GROUP: 'rg-learn-md'
+  AZURE_STAGING_APP_SERVICE: 'mdussa-task-api-cbguagdfddbmgpf3.centralindia-01'
+  AZURE_PRODUCTION_APP_SERVICE: 'mdussa-task-api-cbguagdfddbmgpf3.centralindia-01'
   # ===============================
 
 jobs:
