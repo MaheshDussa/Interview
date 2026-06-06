@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <!-- Prevent Windows SDK implicit framework references so MSBuild Windows targets
+         don't attempt to compute Windows SDK paths on non-Windows or minimal environments. -->
+    <IncludeWindowsSDKRefFrameworkReferences>false</IncludeWindowsSDKRefFrameworkReferences>
+    <!-- Ensure CsWinRT generator isn't triggered during the build to avoid evaluating empty paths -->
+    <CsWinRTGenerateInteropAssembly>false</CsWinRTGenerateInteropAssembly>
+    <CsWinRTUseWindowsUIXamlProjections>false</CsWinRTUseWindowsUIXamlProjections>
+  </PropertyGroup>
+</Project>

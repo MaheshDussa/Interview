@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{59b1cae0-77b5-4ead-9030-e4738ba0cee8}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql170DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
@@ -79,34 +79,34 @@
     <Build Include="dbo\Tables\USERS.sql" />
     <None Include="Scripts\Data\create-encryption-objects.sql" />
     <None Include="Scripts\Data\DatabaseMasterKey.sql" />
-    <Build Include="DB-Learning\Interview\01_Microsoft_Interview_150_Scenarios.sql" />
-    <Build Include="DB-Learning\Interview\02_Tricky_Temp_Table_Scenarios.sql" />
-    <Build Include="DB-Learning\00_QuickStart_Encryption.sql" />
-    <Build Include="DB-Learning\01_Schema_RBAC_Bootstrap.sql" />
-    <Build Include="DB-Learning\02_TSQL_Fundamentals_And_Pivot.sql" />
-    <Build Include="DB-Learning\03_Joins.sql" />
-    <Build Include="DB-Learning\04_StoredProcs_And_Functions.sql" />
-    <Build Include="DB-Learning\05_Triggers.sql" />
-    <Build Include="DB-Learning\06_Views_TempTables_CTEs_DerivedTables.sql" />
-    <Build Include="DB-Learning\07_Window_Functions.sql" />
-    <Build Include="DB-Learning\08_Specialized_Tables_InMemory_Temporal_Ledger_Graph.sql" />
-    <Build Include="DB-Learning\09_Advanced_JSON_Regex_Fuzzy_Graph_Correlated_TryCatch.sql" />
-    <Build Include="DB-Learning\10_Indexes_And_Execution_Plans.sql" />
-    <Build Include="DB-Learning\11_Transactions_And_Isolation_Levels.sql" />
-    <Build Include="DB-Learning\12_Constraints_Computed_Columns_Sequences.sql" />
-    <Build Include="DB-Learning\13_Performance_Tuning_Stats_Partitioning_Columnstore.sql" />
-    <Build Include="DB-Learning\14_SetOps_Apply_GroupingSets_Merge.sql" />
-    <Build Include="DB-Learning\15_Dynamic_SQL_Cursors_TVPs.sql" />
-    <Build Include="DB-Learning\16_Security_RLS_DDM_Encryption.sql" />
-    <Build Include="DB-Learning\17_Admin_Backups_DMVs_Monitoring.sql" />
-    <Build Include="DB-Learning\18_CDC_FullText_External_Tables.sql" />
-    <Build Include="DB-Learning\19_Data_Modeling_Normalization.sql" />
-    <Build Include="DB-Learning\20_System_Procs_System_Tables_Shortcuts.sql" />
-    <Build Include="DB-Learning\21_Setup_Encryption_Keys.sql" />
-    <Build Include="DB-Learning\22_Encryption_StoredProcedures.sql" />
-    <Build Include="DB-Learning\23_Encryption_Examples.sql" />
-    <Build Include="DB-Learning\24_Encryption_Utilities.sql" />
-    <Build Include="DB-Learning\README_Encryption.sql" />
+    <None Include="DB-Learning\Interview\01_Microsoft_Interview_150_Scenarios.sql" />
+    <None Include="DB-Learning\Interview\02_Tricky_Temp_Table_Scenarios.sql" />
+    <None Include="DB-Learning\00_QuickStart_Encryption.sql" />
+    <None Include="DB-Learning\01_Schema_RBAC_Bootstrap.sql" />
+    <None Include="DB-Learning\02_TSQL_Fundamentals_And_Pivot.sql" />
+    <None Include="DB-Learning\03_Joins.sql" />
+    <None Include="DB-Learning\04_StoredProcs_And_Functions.sql" />
+    <None Include="DB-Learning\05_Triggers.sql" />
+    <None Include="DB-Learning\06_Views_TempTables_CTEs_DerivedTables.sql" />
+    <None Include="DB-Learning\07_Window_Functions.sql" />
+    <None Include="DB-Learning\08_Specialized_Tables_InMemory_Temporal_Ledger_Graph.sql" />
+    <None Include="DB-Learning\09_Advanced_JSON_Regex_Fuzzy_Graph_Correlated_TryCatch.sql" />
+    <None Include="DB-Learning\10_Indexes_And_Execution_Plans.sql" />
+    <None Include="DB-Learning\11_Transactions_And_Isolation_Levels.sql" />
+    <None Include="DB-Learning\12_Constraints_Computed_Columns_Sequences.sql" />
+    <None Include="DB-Learning\13_Performance_Tuning_Stats_Partitioning_Columnstore.sql" />
+    <None Include="DB-Learning\14_SetOps_Apply_GroupingSets_Merge.sql" />
+    <None Include="DB-Learning\15_Dynamic_SQL_Cursors_TVPs.sql" />
+    <None Include="DB-Learning\16_Security_RLS_DDM_Encryption.sql" />
+    <None Include="DB-Learning\17_Admin_Backups_DMVs_Monitoring.sql" />
+    <None Include="DB-Learning\18_CDC_FullText_External_Tables.sql" />
+    <None Include="DB-Learning\19_Data_Modeling_Normalization.sql" />
+    <None Include="DB-Learning\20_System_Procs_System_Tables_Shortcuts.sql" />
+    <None Include="DB-Learning\21_Setup_Encryption_Keys.sql" />
+    <None Include="DB-Learning\22_Encryption_StoredProcedures.sql" />
+    <None Include="DB-Learning\23_Encryption_Examples.sql" />
+    <None Include="DB-Learning\24_Encryption_Utilities.sql" />
+    <None Include="DB-Learning\README_Encryption.sql" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Scripts\PreDeployment\Script.PreDeployment1.sql" />

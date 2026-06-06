@@ -4,7 +4,7 @@
     [LastName]     NVARCHAR (100) NULL,
     [Email]        NVARCHAR (100) NOT NULL,
     [Phone]        NVARCHAR (13)  NULL,
-    [PasswordHash] VARBINARY (64) NULL,
+    [PasswordHash] VARBINARY (256) NULL,
     [IsActive]     BIT            DEFAULT ((0)) NULL,
     [CreatedDate]  DATETIME       DEFAULT (getdate()) NULL,
     PRIMARY KEY CLUSTERED ([UserId] ASC),

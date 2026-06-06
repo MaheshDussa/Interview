@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="dblearning.sqlproj">
+  <Project Path="dblearning.sqlproj" Id="59b1cae0-77b5-4ead-9030-e4738ba0cee8">
     <Build />
     <Deploy />
   </Project>

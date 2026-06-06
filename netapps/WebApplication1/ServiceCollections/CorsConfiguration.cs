@@ -10,10 +10,13 @@ public static class CorsConfiguration
         {
             options.AddPolicy(AllowAngularApp, policy =>
             {
-                policy.WithOrigins("http://localhost:4200")
+                // Allow any origin for frontend apps. Do not use AllowCredentials() together
+                // with AllowAnyOrigin — browsers will reject responses. If you need to
+                // support cookies or credentialed requests, replace AllowAnyOrigin with
+                // a list of specific origins and keep AllowCredentials().
+                policy.AllowAnyOrigin()
                       .AllowAnyHeader()
-                      .AllowAnyMethod()
-                      .AllowCredentials();
+                      .AllowAnyMethod();
             });
         });
 
