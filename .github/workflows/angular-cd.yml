@@ -63,8 +63,9 @@ jobs:
     - name: Create deployment package
       run: |
         mkdir -p "${{ env.ARTIFACTS_PATH }}"
-        cd "${{ env.PROJECT_PATH }}"
-        zip -r "../../${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}" "${{ env.BROWSER_OUTPUT_PATH }}"
+        rm -f "${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}"
+        cd "${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}"
+        zip -r "${GITHUB_WORKSPACE}/${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}" .
 
     - name: Azure Login
       uses: azure/login@v2
@@ -138,8 +139,9 @@ jobs:
     - name: Create deployment package
       run: |
         mkdir -p "${{ env.ARTIFACTS_PATH }}"
-        cd "${{ env.PROJECT_PATH }}"
-        zip -r "../../${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}" "${{ env.BROWSER_OUTPUT_PATH }}"
+        rm -f "${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}"
+        cd "${{ env.PROJECT_PATH }}/${{ env.BROWSER_OUTPUT_PATH }}"
+        zip -r "${GITHUB_WORKSPACE}/${{ env.ARTIFACTS_PATH }}/${{ env.DEPLOY_PACKAGE_NAME }}" .
 
     - name: Azure Login
       uses: azure/login@v2
