@@ -9,6 +9,7 @@ public static class MiddlewareConfiguration
         // Global exception handling middleware should be first in the pipeline so it
         // can catch exceptions from all downstream middleware and controllers.
         app.UseExceptionHandlingMiddleware();
+        app.UseApplicationInsightsRequestTracking();
 
         app.UseSwaggerWithUI();
 

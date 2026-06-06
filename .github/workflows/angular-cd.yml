@@ -12,8 +12,8 @@ on:
           - staging
           - production
       artifact_run_id:
-        description: 'Run ID of the Angular CI workflow artifact to deploy'
-        required: true
+        description: 'Optional Angular CI run ID to deploy. Leave blank to use the latest successful angular-ci.yml run on this branch.'
+        required: false
         type: string
 
 permissions:
@@ -40,12 +40,47 @@ jobs:
       url: https://${{ env.AZURE_STAGING_APP_SERVICE }}.azurewebsites.net
 
     steps:
+    - name: Resolve CI run ID
+      id: resolve-run
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const providedRunId = `${{ inputs.artifact_run_id }}`.trim();
+          if (providedRunId) {
+            core.info(`Using provided CI run ID: ${providedRunId}`);
+            core.setOutput('run_id', providedRunId);
+            return;
+          }
+
+          const branch = context.ref.replace('refs/heads/', '');
+          const response = await github.rest.actions.listWorkflowRuns({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'angular-ci.yml',
+            branch,
+            status: 'completed',
+            per_page: 20,
+          });
+
+          const latestSuccessfulRun = response.data.workflow_runs.find(
+            (run) => run.conclusion === 'success'
+          );
+
+          if (!latestSuccessfulRun) {
+            core.setFailed(`No successful angular-ci.yml run found on branch '${branch}'.`);
+            return;
+          }
+
+          core.info(`Using latest successful CI run ID: ${latestSuccessfulRun.id}`);
+          core.setOutput('run_id', String(latestSuccessfulRun.id));
+
     - name: Download CI artifact
       uses: actions/download-artifact@v4
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         repository: ${{ github.repository }}
-        run-id: ${{ inputs.artifact_run_id }}
+        run-id: ${{ steps.resolve-run.outputs.run_id }}
         name: angular-artifacts
         path: ${{ env.ARTIFACTS_PATH }}
 
@@ -81,7 +116,7 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "- **Environment**: Staging" >> $GITHUB_STEP_SUMMARY
         echo "- **App Service**: ${{ env.AZURE_STAGING_APP_SERVICE }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Artifact Run ID**: ${{ inputs.artifact_run_id }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Artifact Run ID**: ${{ steps.resolve-run.outputs.run_id }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Package**: ${{ env.DEPLOY_PACKAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
         echo "- **URL**: https://${{ env.AZURE_STAGING_APP_SERVICE }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
         echo "- **Required Secret**: AZURE_CREDENTIALS" >> $GITHUB_STEP_SUMMARY
@@ -102,12 +137,47 @@ jobs:
       url: https://${{ env.AZURE_PRODUCTION_APP_SERVICE }}.azurewebsites.net
 
     steps:
+    - name: Resolve CI run ID
+      id: resolve-run
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const providedRunId = `${{ inputs.artifact_run_id }}`.trim();
+          if (providedRunId) {
+            core.info(`Using provided CI run ID: ${providedRunId}`);
+            core.setOutput('run_id', providedRunId);
+            return;
+          }
+
+          const branch = context.ref.replace('refs/heads/', '');
+          const response = await github.rest.actions.listWorkflowRuns({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'angular-ci.yml',
+            branch,
+            status: 'completed',
+            per_page: 20,
+          });
+
+          const latestSuccessfulRun = response.data.workflow_runs.find(
+            (run) => run.conclusion === 'success'
+          );
+
+          if (!latestSuccessfulRun) {
+            core.setFailed(`No successful angular-ci.yml run found on branch '${branch}'.`);
+            return;
+          }
+
+          core.info(`Using latest successful CI run ID: ${latestSuccessfulRun.id}`);
+          core.setOutput('run_id', String(latestSuccessfulRun.id));
+
     - name: Download CI artifact
       uses: actions/download-artifact@v4
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         repository: ${{ github.repository }}
-        run-id: ${{ inputs.artifact_run_id }}
+        run-id: ${{ steps.resolve-run.outputs.run_id }}
         name: angular-artifacts
         path: ${{ env.ARTIFACTS_PATH }}
 
@@ -143,7 +213,7 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "- **Environment**: Production" >> $GITHUB_STEP_SUMMARY
         echo "- **App Service**: ${{ env.AZURE_PRODUCTION_APP_SERVICE }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Artifact Run ID**: ${{ inputs.artifact_run_id }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Artifact Run ID**: ${{ steps.resolve-run.outputs.run_id }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Package**: ${{ env.DEPLOY_PACKAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
         echo "- **URL**: https://${{ env.AZURE_PRODUCTION_APP_SERVICE }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
         echo "- **Required Secret**: AZURE_CREDENTIALS" >> $GITHUB_STEP_SUMMARY

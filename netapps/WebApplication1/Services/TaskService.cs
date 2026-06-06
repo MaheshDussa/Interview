@@ -8,10 +8,12 @@ namespace WebApplication1.Services;
 public class TaskService : ITaskService
 {
     private readonly LearningContext _context;
+    private readonly IApplicationTelemetry _telemetry;
 
-    public TaskService(LearningContext context)
+    public TaskService(LearningContext context, IApplicationTelemetry telemetry)
     {
         _context = context;
+        _telemetry = telemetry;
     }
 
     public async Task<IEnumerable<TaskDto>> GetUserTasksAsync(int userId)
@@ -44,6 +46,12 @@ public class TaskService : ITaskService
         _context.Tasks.Add(task);
         await _context.SaveChangesAsync();
 
+        _telemetry.TrackEvent("TaskCreated", new Dictionary<string, string>
+        {
+            ["userId"] = userId.ToString(),
+            ["taskId"] = task.TaskId.ToString()
+        });
+
         return MapToDto(task);
     }
 
@@ -63,6 +71,13 @@ public class TaskService : ITaskService
 
         await _context.SaveChangesAsync();
 
+        _telemetry.TrackEvent("TaskUpdated", new Dictionary<string, string>
+        {
+            ["userId"] = userId.ToString(),
+            ["taskId"] = task.TaskId.ToString(),
+            ["isCompleted"] = (task.IsCompleted ?? false).ToString()
+        });
+
         return MapToDto(task);
     }
 
@@ -78,6 +93,12 @@ public class TaskService : ITaskService
 
         _context.Tasks.Remove(task);
         await _context.SaveChangesAsync();
+
+        _telemetry.TrackEvent("TaskDeleted", new Dictionary<string, string>
+        {
+            ["userId"] = userId.ToString(),
+            ["taskId"] = taskId.ToString()
+        });
 
         return true;
     }

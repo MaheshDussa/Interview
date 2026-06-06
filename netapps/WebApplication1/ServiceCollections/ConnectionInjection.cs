@@ -10,7 +10,7 @@ namespace WebApplication1.ServiceCollections
     {
         public static IServiceCollection AddDatabaseContext(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("MyExpressConnection");
+            var connectionString = configuration.GetRequiredConnectionString("MyExpressConnection");
 
             services.AddDbContext<LearningContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -25,6 +25,8 @@ namespace WebApplication1.ServiceCollections
         {
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ITaskService, TaskService>();
+            services.AddScoped<IBlobStorageService, BlobStorageService>();
+            services.AddScoped<IAzurePracticeMessagingService, AzurePracticeMessagingService>();
 
             return services;
         }

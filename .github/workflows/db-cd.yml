@@ -12,8 +12,8 @@ on:
           - staging
           - production
       artifact_run_id:
-        description: 'Run ID of the database CI workflow artifact to deploy'
-        required: true
+        description: 'Optional database CI run ID to deploy. Leave blank to use the latest successful db-ci.yml run on this branch.'
+        required: false
         type: string
 
 permissions:
@@ -44,6 +44,41 @@ jobs:
       name: staging
 
     steps:
+    - name: Resolve CI run ID
+      id: resolve-run
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const providedRunId = `${{ inputs.artifact_run_id }}`.trim();
+          if (providedRunId) {
+            core.info(`Using provided CI run ID: ${providedRunId}`);
+            core.setOutput('run_id', providedRunId);
+            return;
+          }
+
+          const branch = context.ref.replace('refs/heads/', '');
+          const response = await github.rest.actions.listWorkflowRuns({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'db-ci.yml',
+            branch,
+            status: 'completed',
+            per_page: 20,
+          });
+
+          const latestSuccessfulRun = response.data.workflow_runs.find(
+            (run) => run.conclusion === 'success'
+          );
+
+          if (!latestSuccessfulRun) {
+            core.setFailed(`No successful db-ci.yml run found on branch '${branch}'.`);
+            return;
+          }
+
+          core.info(`Using latest successful CI run ID: ${latestSuccessfulRun.id}`);
+          core.setOutput('run_id', String(latestSuccessfulRun.id));
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -58,7 +93,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         repository: ${{ github.repository }}
-        run-id: ${{ inputs.artifact_run_id }}
+        run-id: ${{ steps.resolve-run.outputs.run_id }}
         name: database-artifacts
         path: ${{ env.ARTIFACTS_PATH }}
 
@@ -103,7 +138,7 @@ jobs:
         Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Environment**: Staging'
         Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Server**: ${{ env.AZURE_SQL_SERVER_FQDN }}'
         Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Database**: ${{ env.AZURE_STAGING_DATABASE_NAME }}'
-        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Artifact Run ID**: ${{ inputs.artifact_run_id }}'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Artifact Run ID**: ${{ steps.resolve-run.outputs.run_id }}'
         Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Artifact**: ${{ env.DACPAC_NAME }}'
         Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Required Secret**: AZURE_CREDENTIALS'
         Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Required Environment Secret**: AZURE_SQL_ADMIN_PASSWORD'
@@ -124,6 +159,41 @@ jobs:
       name: production
 
     steps:
+    - name: Resolve CI run ID
+      id: resolve-run
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const providedRunId = `${{ inputs.artifact_run_id }}`.trim();
+          if (providedRunId) {
+            core.info(`Using provided CI run ID: ${providedRunId}`);
+            core.setOutput('run_id', providedRunId);
+            return;
+          }
+
+          const branch = context.ref.replace('refs/heads/', '');
+          const response = await github.rest.actions.listWorkflowRuns({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'db-ci.yml',
+            branch,
+            status: 'completed',
+            per_page: 20,
+          });
+
+          const latestSuccessfulRun = response.data.workflow_runs.find(
+            (run) => run.conclusion === 'success'
+          );
+
+          if (!latestSuccessfulRun) {
+            core.setFailed(`No successful db-ci.yml run found on branch '${branch}'.`);
+            return;
+          }
+
+          core.info(`Using latest successful CI run ID: ${latestSuccessfulRun.id}`);
+          core.setOutput('run_id', String(latestSuccessfulRun.id));
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -138,7 +208,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         repository: ${{ github.repository }}
-        run-id: ${{ inputs.artifact_run_id }}
+        run-id: ${{ steps.resolve-run.outputs.run_id }}
         name: database-artifacts
         path: ${{ env.ARTIFACTS_PATH }}
 
@@ -183,7 +253,7 @@ jobs:
         Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Environment**: Production'
         Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Server**: ${{ env.AZURE_SQL_SERVER_FQDN }}'
         Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Database**: ${{ env.AZURE_PRODUCTION_DATABASE_NAME }}'
-        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Artifact Run ID**: ${{ inputs.artifact_run_id }}'
+        Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Artifact Run ID**: ${{ steps.resolve-run.outputs.run_id }}'
         Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Artifact**: ${{ env.DACPAC_NAME }}'
         Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Required Secret**: AZURE_CREDENTIALS'
         Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value '- **Required Environment Secret**: AZURE_SQL_ADMIN_PASSWORD'

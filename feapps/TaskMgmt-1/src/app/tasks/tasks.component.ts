@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AppInsightsService } from '../core/app-insights.service';
 import { TaskService } from '../core/task.service';
 import { AuthService } from '../core/auth.service';
 import { TaskItem } from '../core/models';
@@ -15,6 +16,7 @@ import { TaskItem } from '../core/models';
 })
 export class TasksComponent {
   private fb = inject(FormBuilder);
+  private appInsights = inject(AppInsightsService);
   private taskService = inject(TaskService);
   private auth = inject(AuthService);
   private router = inject(Router);
@@ -23,6 +25,7 @@ export class TasksComponent {
   loading = signal(false);
   error = signal<string | null>(null);
   editingId = signal<number | null>(null);
+  readonly userDisplayName = this.auth.userDisplayName;
 
   createForm = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(150)]],
@@ -48,6 +51,7 @@ export class TasksComponent {
         this.loading.set(false);
       },
       error: err => {
+        this.appInsights.trackCodeError(err, { source: 'tasks.refresh' });
         this.error.set(err?.error?.message || 'Failed to load tasks.');
         this.loading.set(false);
       }
@@ -68,7 +72,10 @@ export class TasksComponent {
         this.createForm.reset({ title: '', dueDate: '' });
         this.refresh();
       },
-      error: err => this.error.set(err?.error?.message || 'Failed to create task.')
+      error: err => {
+        this.appInsights.trackCodeError(err, { source: 'tasks.create' });
+        this.error.set(err?.error?.message || 'Failed to create task.');
+      }
     });
   }
 
@@ -100,7 +107,10 @@ export class TasksComponent {
         this.editingId.set(null);
         this.refresh();
       },
-      error: err => this.error.set(err?.error?.message || 'Failed to update task.')
+      error: err => {
+        this.appInsights.trackCodeError(err, { source: 'tasks.saveEdit', taskId: id });
+        this.error.set(err?.error?.message || 'Failed to update task.');
+      }
     });
   }
 
@@ -111,7 +121,10 @@ export class TasksComponent {
       dueDate: task.dueDate ?? null
     }).subscribe({
       next: () => this.refresh(),
-      error: err => this.error.set(err?.error?.message || 'Failed to update task.')
+      error: err => {
+        this.appInsights.trackCodeError(err, { source: 'tasks.toggleComplete', taskId: task.id });
+        this.error.set(err?.error?.message || 'Failed to update task.');
+      }
     });
   }
 
@@ -119,12 +132,20 @@ export class TasksComponent {
     if (!confirm(`Delete task "${task.title}"?`)) return;
     this.taskService.delete(task.id).subscribe({
       next: () => this.refresh(),
-      error: err => this.error.set(err?.error?.message || 'Failed to delete task.')
+      error: err => {
+        this.appInsights.trackCodeError(err, { source: 'tasks.remove', taskId: task.id });
+        this.error.set(err?.error?.message || 'Failed to delete task.');
+      }
     });
   }
 
-  logout(): void {
-    this.auth.logout();
-    this.router.navigate(['/login']);
+  async logout(): Promise<void> {
+    try {
+      await this.auth.logout();
+      await this.router.navigate(['/login']);
+    } catch (error) {
+      this.appInsights.trackCodeError(error, { source: 'tasks.logout', operation: 'logout' });
+      this.error.set('Sign out failed. Please try again.');
+    }
   }
 }

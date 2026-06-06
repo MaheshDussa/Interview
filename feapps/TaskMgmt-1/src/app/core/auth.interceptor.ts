@@ -1,25 +1,40 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
+import { catchError, from, switchMap, throwError } from 'rxjs';
+import { AppInsightsService } from './app-insights.service';
 import { AuthService } from './auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
-  const router = inject(Router);
-  const token = auth.getToken();
+  const appInsights = inject(AppInsightsService);
 
-  const authReq = token
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-    : req;
+  if (!auth.shouldAttachToken(req.url)) {
+    return next(req);
+  }
 
-  return next(authReq).pipe(
+  return from(auth.acquireAccessToken()).pipe(
     catchError(err => {
-      if (err?.status === 401) {
-        auth.logout();
-        router.navigate(['/login']);
-      }
+      appInsights.trackCodeError(err, {
+        source: 'auth-token-acquisition',
+        url: req.url,
+        method: req.method
+      });
       return throwError(() => err);
+    }),
+    switchMap(token => {
+      const authReq = token
+        ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+        : req;
+
+      return next(authReq).pipe(
+        catchError(err => {
+          appInsights.trackApiFailure(authReq.url, err?.status ?? 0, err?.message || 'HTTP request failed', {
+            method: authReq.method,
+            source: 'http-interceptor'
+          });
+          return throwError(() => err);
+        })
+      );
     })
   );
 };

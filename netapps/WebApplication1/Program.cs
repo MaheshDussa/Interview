@@ -2,9 +2,15 @@ using WebApplication1.ServiceCollections;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddNormalizedEnvironmentSettings();
+builder.AddCentralizedSecrets();
+builder.Configuration.ValidateRequiredSecrets();
+
 // Add services to the container
 builder.Services.AddDatabaseContext(builder.Configuration);
 builder.Services.AddApplicationServices();
+builder.Services.AddAzurePracticeBackgroundWorkers();
+builder.Services.AddApplicationObservability(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddSwaggerWithAuth();
 // If Azure AD is configured (ClientId present), register Azure AD auth, otherwise fall back to local JWT

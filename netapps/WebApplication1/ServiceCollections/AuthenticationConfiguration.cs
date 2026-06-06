@@ -9,9 +9,6 @@ public static class AuthenticationConfiguration
 {
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
-        // Legacy local JWT configuration kept for backward compatibility
-        var jwtSettings = configuration.GetSection("Jwt");
-
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -25,9 +22,9 @@ public static class AuthenticationConfiguration
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings["Issuer"],
-                ValidAudience = jwtSettings["Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!))
+                ValidIssuer = configuration.GetRequiredValue("Jwt:Issuer"),
+                ValidAudience = configuration.GetRequiredValue("Jwt:Audience"),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetRequiredValue("Jwt:Key")))
             };
         });
 
@@ -40,7 +37,7 @@ public static class AuthenticationConfiguration
         var azureAd = configuration.GetSection("AzureAd");
         var instance = azureAd.GetValue<string>("Instance") ?? "https://login.microsoftonline.com/";
         var tenantId = azureAd.GetValue<string>("TenantId") ?? "common";
-        var clientId = azureAd.GetValue<string>("ClientId");
+        var clientId = configuration.GetRequiredValue("AzureAd:ClientId");
 
         var authority = $"{instance.TrimEnd('/')}/{tenantId}/v2.0";
 

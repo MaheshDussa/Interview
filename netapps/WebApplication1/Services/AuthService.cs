@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Data;
 using WebApplication1.Models.DTOs;
+using WebApplication1.ServiceCollections;
 
 namespace WebApplication1.Services;
 
@@ -12,11 +13,13 @@ public class AuthService : IAuthService
 {
     private readonly LearningContext _context;
     private readonly IConfiguration _configuration;
+    private readonly IApplicationTelemetry _telemetry;
 
-    public AuthService(LearningContext context, IConfiguration configuration)
+    public AuthService(LearningContext context, IConfiguration configuration, IApplicationTelemetry telemetry)
     {
         _context = context;
         _configuration = configuration;
+        _telemetry = telemetry;
     }
 
     public async Task<LoginResponse?> LoginAsync(LoginRequest request)
@@ -26,10 +29,21 @@ public class AuthService : IAuthService
 
         if (user == null)
         {
+            _telemetry.TrackEvent("UserLoginFailed", new Dictionary<string, string>
+            {
+                ["reason"] = "user_not_found_or_inactive"
+            });
+
             return null;
         }
 
         var token = GenerateJwtToken(user);
+
+        _telemetry.TrackEvent("UserLoginSucceeded", new Dictionary<string, string>
+        {
+            ["userId"] = user.UserId.ToString(),
+            ["authType"] = "jwt"
+        });
 
         return new LoginResponse
         {
@@ -43,8 +57,7 @@ public class AuthService : IAuthService
 
     private string GenerateJwtToken(Models.Entities.User user)
     {
-        var jwtSettings = _configuration.GetSection("Jwt");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetRequiredValue("Jwt:Key")));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
@@ -55,8 +68,8 @@ public class AuthService : IAuthService
         };
 
         var token = new JwtSecurityToken(
-            issuer: jwtSettings["Issuer"],
-            audience: jwtSettings["Audience"],
+            issuer: _configuration.GetRequiredValue("Jwt:Issuer"),
+            audience: _configuration.GetRequiredValue("Jwt:Audience"),
             claims: claims,
             expires: DateTime.UtcNow.AddHours(24),
             signingCredentials: credentials

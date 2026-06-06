@@ -33,7 +33,7 @@ Purpose: deploys the .NET API to Azure App Service.
 
 Key points:
 - Uses `workflow_dispatch` with `staging` or `production`.
-- Requires the `artifact_run_id` input from a successful `.NET` CI run.
+- Accepts an optional `artifact_run_id`. If omitted, the workflow uses the latest successful `.NET` CI run on the selected branch.
 - Downloads the `dotnet-artifacts` package from CI and deploys it without rebuilding.
 - Deploys with `azure/webapps-deploy@v3`.
 - Includes a basic post-deployment health check.
@@ -65,7 +65,7 @@ Purpose: deploys the Angular app to Azure App Service.
 
 Key points:
 - Uses `workflow_dispatch` with `staging` or `production`.
-- Requires the `artifact_run_id` input from a successful Angular CI run.
+- Accepts an optional `artifact_run_id`. If omitted, the workflow uses the latest successful Angular CI run on the selected branch.
 - Downloads `angular-app.zip` from CI and deploys it without rebuilding.
 - Deploys with `azure/webapps-deploy@v3`.
 
@@ -97,7 +97,7 @@ Purpose: publishes the built DACPAC to Azure SQL Database.
 Key points:
 - Uses `workflow_dispatch` with `staging` or `production`.
 - Runs on `windows-latest`.
-- Requires the `artifact_run_id` input from a successful database CI run.
+- Accepts an optional `artifact_run_id`. If omitted, the workflow uses the latest successful database CI run on the selected branch.
 - Installs `microsoft.sqlpackage` as a .NET global tool.
 - Downloads `database-build.zip`, extracts the DACPAC, and publishes it with `sqlpackage`.
 
@@ -115,7 +115,7 @@ Operational notes:
 Before running the CD workflows:
 
 1. Replace placeholder Azure resource values in the deployment workflows.
-2. Run the matching CI workflow and note the CI run ID for the artifact you want to deploy.
+2. Optionally note a specific CI run ID if you want to deploy a non-latest artifact. Otherwise the CD workflow will auto-pick the latest successful CI run on the selected branch.
 3. Add the required GitHub secrets.
 4. If you use GitHub Environments, add environment approvals and environment-scoped secrets for `staging` and `production`.
 5. Confirm that Azure App Service and Azure SQL networking rules allow deployment from GitHub Actions.

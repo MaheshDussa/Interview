@@ -1,6 +1,11 @@
 <div class="tasks-page">
   <header class="topbar">
-    <h1>My Tasks</h1>
+    <div>
+      <h1>My Tasks</h1>
+      @if (userDisplayName()) {
+        <p class="identity">{{ userDisplayName() }}</p>
+      }
+    </div>
     <button class="link" type="button" (click)="logout()">Sign out</button>
   </header>
 

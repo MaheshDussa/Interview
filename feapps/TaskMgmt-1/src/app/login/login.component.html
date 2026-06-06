@@ -1,29 +1,47 @@
 <div class="login-page">
   <div class="card">
     <h1>Task Manager</h1>
-    <p class="subtitle">Sign in with your email</p>
+    <p class="subtitle">
+      {{ usesAzureAd() ? 'Sign in with Azure Active Directory to access your tasks.' : 'Sign in with your email to access your tasks.' }}
+    </p>
 
-    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <label for="email">Email</label>
-      <input
-        id="email"
-        type="email"
-        formControlName="email"
-        placeholder="you@example.com"
-        autocomplete="email"
-        [class.invalid]="form.controls.email.touched && form.controls.email.invalid"
-      />
-      @if (form.controls.email.touched && form.controls.email.invalid) {
-        <small class="error">Please enter a valid email.</small>
-      }
+    @if (usesAzureAd() && !isConfigured()) {
+      <div class="alert">
+        Azure AD is not configured yet. Update <strong>src/environments/environment.ts</strong> with your tenant ID, client ID, and API scope values.
+      </div>
+    }
 
-      @if (error()) {
-        <div class="alert">{{ error() }}</div>
-      }
+    @if (userDisplayName()) {
+      <p class="signed-in">Signed in as {{ userDisplayName() }}</p>
+    }
 
-      <button type="submit" [disabled]="loading()">
-        {{ loading() ? 'Signing in…' : 'Sign in' }}
+    @if (error()) {
+      <div class="alert">{{ error() }}</div>
+    }
+
+    @if (usesAzureAd()) {
+      <button type="button" (click)="signInWithAzureAd()" [disabled]="loading() || !isConfigured()">
+        {{ loading() ? 'Signing in…' : 'Sign in with Microsoft' }}
       </button>
-    </form>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submitLocalLogin()" novalidate>
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          [class.invalid]="form.controls.email.touched && form.controls.email.invalid"
+        />
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <small class="error">Please enter a valid email.</small>
+        }
+
+        <button type="submit" [disabled]="loading()">
+          {{ loading() ? 'Signing in…' : 'Sign in' }}
+        </button>
+      </form>
+    }
   </div>
 </div>
