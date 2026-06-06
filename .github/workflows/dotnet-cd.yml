@@ -18,8 +18,8 @@ env:
   ARTIFACTS_PATH: 'artifacts'
   # ===== CHANGE THESE VALUES =====
   AZURE_RESOURCE_GROUP: 'rg-learn-md'
-  AZURE_STAGING_APP_SERVICE: 'mdussa-task-api-cbguagdfddbmgpf3.centralindia-01'
-  AZURE_PRODUCTION_APP_SERVICE: 'mdussa-task-api-cbguagdfddbmgpf3.centralindia-01'
+  AZURE_STAGING_APP_SERVICE: 'mdussa-task-api'
+  AZURE_PRODUCTION_APP_SERVICE: 'mdussa-task-api'
   # ===============================
 
 jobs:
