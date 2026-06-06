@@ -20,9 +20,9 @@ env:
   ARTIFACTS_PATH: 'artifacts'
   DEPLOY_PACKAGE_NAME: 'angular-app.zip'
   # ===== CHANGE THESE VALUES =====
-  AZURE_RESOURCE_GROUP: 'your-resource-group-name'
-  AZURE_STAGING_APP_SERVICE: 'your-staging-angular-app-service'
-  AZURE_PRODUCTION_APP_SERVICE: 'your-production-angular-app-service'
+  AZURE_RESOURCE_GROUP: 'rg-learn-md'
+  AZURE_STAGING_APP_SERVICE: 'mdussa-task-ui'
+  AZURE_PRODUCTION_APP_SERVICE: 'mdussa-task-ui'
   # Required secret: AZURE_CREDENTIALS
   # ===============================
 
