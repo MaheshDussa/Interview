@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>MCP_POC1</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="MCP-POC1.McpServer\**\*.cs" />
+    <Content Remove="MCP-POC1.McpServer\**\*" />
+    <EmbeddedResource Remove="MCP-POC1.McpServer\**\*" />
+    <None Remove="MCP-POC1.McpServer\**\*" />
+    <Compile Remove="MCP-POC1.Learning.McpServer\**\*.cs" />
+    <Content Remove="MCP-POC1.Learning.McpServer\**\*" />
+    <EmbeddedResource Remove="MCP-POC1.Learning.McpServer\**\*" />
+    <None Remove="MCP-POC1.Learning.McpServer\**\*" />
+    <Compile Remove="MCP-POC1.AIQuality.McpServer\**\*.cs" />
+    <Content Remove="MCP-POC1.AIQuality.McpServer\**\*" />
+    <EmbeddedResource Remove="MCP-POC1.AIQuality.McpServer\**\*" />
+    <None Remove="MCP-POC1.AIQuality.McpServer\**\*" />
+    <Compile Remove="MCP-POC1.Shared\**\*.cs" />
+    <Content Remove="MCP-POC1.Shared\**\*" />
+    <EmbeddedResource Remove="MCP-POC1.Shared\**\*" />
+    <None Remove="MCP-POC1.Shared\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+</Project>

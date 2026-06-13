@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Search.Documents" Version="12.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="MCP.Tests\**\*.cs" />
+    <Compile Remove="MCP.SemanticKernelHost\**\*.cs" />
+    <Content Remove="MCP.Tests\**" />
+    <Content Remove="MCP.SemanticKernelHost\**" />
+    <EmbeddedResource Remove="MCP.Tests\**" />
+    <EmbeddedResource Remove="MCP.SemanticKernelHost\**" />
+    <None Remove="MCP.Tests\**" />
+    <None Remove="MCP.SemanticKernelHost\**" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,136 @@
+@MCP_HostAddress = http://localhost:5007
+@AzureDevOpsWorkItemId = 108
+@AzureSearchQuery = architecture
+@AzureHybridQuery = how does the api gateway secure service-to-service calls to the search indexing pipeline
+
+### 1) Server health
+GET {{MCP_HostAddress}}/health
+Accept: application/json
+
+### 2) MCP initialize
+POST {{MCP_HostAddress}}/mcp
+Content-Type: application/json
+Accept: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "initialize",
+  "params": {
+    "protocolVersion": "2024-11-05",
+    "capabilities": {},
+    "clientInfo": {
+      "name": "meeting-demo-client",
+      "version": "1.0.0"
+    }
+  }
+}
+
+### 3) MCP tools/list
+POST {{MCP_HostAddress}}/mcp
+Content-Type: application/json
+Accept: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "tools/list",
+  "params": {}
+}
+
+### 4) MCP tools/call: health_check
+POST {{MCP_HostAddress}}/mcp
+Content-Type: application/json
+Accept: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "tools/call",
+  "params": {
+    "name": "health_check",
+    "arguments": {}
+  }
+}
+
+### 5) Optional: show graceful failure without Azure config
+POST {{MCP_HostAddress}}/mcp
+Content-Type: application/json
+Accept: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "tools/call",
+  "params": {
+    "name": "architecture_search_hybrid",
+    "arguments": {
+      "query": "{{AzureHybridQuery}}"
+    }
+  }
+}
+
+### 6) Azure OpenAI embeddings demo
+POST {{MCP_HostAddress}}/embeddings
+Content-Type: application/json
+Accept: application/json
+
+{
+  "input": "design an architecture search workflow"
+}
+
+### 7) Azure AI Search title search demo
+GET {{MCP_HostAddress}}/azure-search/architecture-documents?query={{AzureSearchQuery}}
+Accept: application/json
+
+### 8) Azure AI Search hybrid demo
+GET {{MCP_HostAddress}}/azure-search/architecture-documents/hybrid?query={{AzureHybridQuery}}
+Accept: application/json
+
+### 9) Azure DevOps work item demo
+GET {{MCP_HostAddress}}/azure-devops/workitems/{{AzureDevOpsWorkItemId}}
+Accept: application/json
+
+### 10) MCP tools/call: architecture_search_hybrid
+POST {{MCP_HostAddress}}/mcp
+Content-Type: application/json
+Accept: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 5,
+  "method": "tools/call",
+  "params": {
+    "name": "architecture_search_hybrid",
+    "arguments": {
+      "query": "{{AzureHybridQuery}}"
+    }
+  }
+}
+
+### 11) MCP tools/call: azure_devops_get_work_item
+POST {{MCP_HostAddress}}/mcp
+Content-Type: application/json
+Accept: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 6,
+  "method": "tools/call",
+  "params": {
+    "name": "azure_devops_get_work_item",
+    "arguments": {
+      "workItemId": {{AzureDevOpsWorkItemId}}
+    }
+  }
+}
+
+### 12) MCP initialized notification (optional)
+POST {{MCP_HostAddress}}/mcp
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "method": "notifications/initialized",
+  "params": {}
+}

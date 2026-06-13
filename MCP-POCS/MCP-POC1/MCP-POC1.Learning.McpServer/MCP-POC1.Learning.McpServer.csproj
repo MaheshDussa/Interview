@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>MCP_POC1.McpServer</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\MCP-POC1.McpServer\GreetingTools.cs" Link="GreetingTools.cs" />
+    <Compile Include="..\MCP-POC1.McpServer\Lab7Tools.cs" Link="Lab7Tools.cs" />
+    <Compile Include="..\MCP-POC1.McpServer\MarkdownNotesClient.cs" Link="MarkdownNotesClient.cs" />
+    <Compile Include="..\MCP-POC1.McpServer\OneNoteNotesClient.cs" Link="OneNoteNotesClient.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.9" />
+    <PackageReference Include="ModelContextProtocol" Version="1.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MCP-POC1.Shared\MCP-POC1.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
